@@ -1,0 +1,510 @@
+@font-face {
+    font-family: "roboto";
+    src: url("/assets/fonts/Roboto/Roboto-VariableFont_wdth\,wght.ttf") format("truetype");
+}
+@font-face {
+    font-family: "relawey";
+    src: url("/assets/fonts/Raleway/Raleway-VariableFont_wght.ttf") format("truetype");
+}
+@font-face {
+    font-family: "bebas-neue";
+    src: url("/assets/fonts/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
+}
+:root{
+    /*fonts*/
+    --bebas-neue: 'bebas-neue', sans-serif;
+    --roboto: 'roboto', sans-serif;
+    --relawey: 'relawey', sans-serif;
+    /* Paleta basada en la descripción (estilo Coursera) */
+    --primary: #0056D2;           /* Azul principal de marca */
+    --primary-variant: #00ADB5;   /* Variante más brillante */
+
+    --white: #FFFFFF;
+    --black: #000000;
+
+    /* verdes */
+    --green-persa: #00b3aa;
+    --green-caribe: #00c29e;
+    --green-conifer: #a3d459;
+
+    --gold: #FAB12F;
+
+    /* Usos concretos */
+    --bg: var(--white);               /* fondo predominante */
+    --fondo-header: #00ADB5;   /* header / navegacion */
+    --fondo-secciones: var(--white);  /* tarjetas / secciones */
+
+    --text: var(--black);             /* texto principal */
+    --text-muted: #6b7280;            /* texto secundario */
+    --on-primary: var(--white);       /* texto sobre primary */
+
+    --border: rgba(0,0,0,0.8);
+    --shadow: rgba(0,0,0,0.4);
+    --glass: rgba(255,255,255,0.6);
+
+    --success: var(--green-persa);
+    --warning: var(--gold);
+    --danger: #ef4444;
+
+    /*decoraaciones footerr*/
+    --fondo-footer: #393E46;
+    --text-footer: var(--white);
+
+    /* Compatibilidad con variables antiguas */
+    --fondo-header: var(--fondo-header);
+    --fondo-secciones: var(--fondo-secciones);
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: var(--bg);
+    overflow-x: hidden;
+    font-family: var(--roboto);
+}
+
+#header-home {
+    background-color: var(--primary-variant);
+    color: var(--white);
+    width: 100vw;
+    height: 5vh;
+    padding: 2.5%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between ;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Estilos del header component */
+header-global {
+    display: block;
+    position: relative;
+    z-index: 100;
+}
+
+#header-inner {
+    background-color: var(--primary-variant);
+    color: var(--white);
+    width: 100%;
+    height: 5vh;
+    padding: 2.5%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 100;
+}
+
+#logo {
+    width: 4vw;
+    height: 8vh;
+    object-fit: contain;
+}
+
+#header-inner div {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+#header-inner a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+    font-size: 1.6rem;
+    transition: all 0.5s ease-in-out;
+}
+
+#header-inner a:hover {
+    text-decoration: underline;
+    transform: scale(1.02);
+}
+
+.btn-cuentas {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--white);
+    color: var(--primary-variant);
+    border: 2px solid var(--white);
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-cuentas:hover {
+    background-color: transparent;
+    color: var(--white);
+    transform: scale(1.05);
+}
+
+.btn-usuario {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: var(--white);
+    color: var(--primary-variant);
+    border: 2px solid var(--white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-usuario:hover {
+    background-color: transparent;
+    color: var(--white);
+    transform: scale(1.05);
+}
+
+#auth-buttons {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+    z-index: 9999;
+}
+
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  height: 100vh;
+  width: 280px;
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding-top: 60px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(20px);
+  transition: all 0.3s ease;
+  z-index: 99;
+}
+
+.menu-lateral.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-300px);
+  pointer-events: all;
+}
+
+.menu-lateral.visible::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+
+.menu-lateral > * {
+  position: relative;
+  z-index: 1;
+  background-color: white;
+}
+
+.menu-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+  margin-bottom: 1rem;
+}
+
+.menu-header-name {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.4rem;
+  font-size: 1.2rem;
+}
+
+.menu-header-email {
+  font-size: 0.9rem;
+  color: #666;
+  word-break: break-all;
+}
+
+.menu-item {
+  padding: 1rem 1.5rem;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: #f8f9fa;
+}
+
+.menu-item span {
+  font-size: 14px;
+}
+
+.admin-item {
+  color: #0056D2;
+  font-weight: 500;
+}
+
+.menu-item.danger {
+  color: #dc3545;
+}
+
+.menu-item.danger:hover {
+  background-color: #fff5f5;
+}
+#section-home {
+    width: 100%;
+    height: auto;
+    padding: 5%;
+    padding-top: 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#section-home #floating-image{
+    margin-top: 2%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5%;
+    padding-top: 7%;
+    width: 90vw;
+    height: 75vh;
+    background-image: url("/assets/img/students-1807505_1920.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,4), 0 6px 20px 0 rgba(0,0,0,2);
+}
+#section-home #floating-image h1{
+    color: var(--primary-variant);
+    font-size: 4rem;
+    text-align: left;
+}
+#section-home #floating-image input{
+    margin-top: 1%;
+    padding: 0.5rem 1rem;
+    font-size: 1.3rem;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--white, #FFFFFF);
+    color: var(--primary-variant, #00ADB5);
+    border: 2px solid var(--white, #FFFFFF);
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+#section-home #floating-image input:hover{
+    background-color: transparent;
+    color: var(--white, #FFFFFF);
+    transform: scale(1.05);
+}
+#section-home #floating-image p{
+    font-size: 1.8rem;
+    color: var(--white);
+    text-align: left;
+    width: 60%;
+}
+#section-home #floating-image strong{
+    color: var(--gold);
+}
+ 
+#section-home #text-guia-cursos-disponibles{
+    color: var(--green-conifer);
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 3%;
+    margin-top: 4%;
+}
+
+#section-home #content-cursos-destacados{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    gap: 8px;
+}
+
+#content-cursos-destacados .seccion-destacada{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3%;
+    background-color: var(--primary-variant);
+    color: var(--text);
+    border-radius: 5px;
+    text-align: left;
+}
+
+#content-cursos-destacados .seccion-destacada .link-apartado-cursos{
+    font-size: 1.5rem;  
+    text-decoration: none;
+    color: var(--white);
+    font-weight: bold;
+    margin-bottom: 5%;
+    transition: all 0.5s ease-in-out;
+}
+#content-cursos-destacados .seccion-destacada .link-apartado-cursos:hover{
+    text-decoration: underline;
+    transform: scale(1.02);
+    transition: all 0.5s ease-in-out;   
+}
+#content-cursos-destacados .seccion-destacada .card-curso .portada-curso{
+    width: 6vw;
+    height: 10vh;
+    margin-right: 3%;
+    border-radius: 12px;
+}
+#content-cursos-destacados .seccion-destacada .card-curso{
+    background-color: var(--white);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 2%;
+    margin-bottom: 3%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8), 0 4px 5px 0 rgba(0,0,0,0.2);
+    border-radius: 5px;
+    text-align: left;
+    transition: all 0.5s ease-in-out;
+    text-decoration: none;
+    color: inherit;
+}
+/* Textos destacables (Certificado, Disponible, etc) */
+.text-destacable-cards {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    display: inline-block;
+    width: fit-content;
+    transition: all 0.3s ease;
+}
+
+/* Variantes de estado */
+.text-destacable-cards:first-of-type {
+    background-color: rgba(0, 173, 181, 0.1);
+    color: var(--primary-variant);
+    border: 1px solid var(--primary-variant);
+}
+
+.text-destacable-cards:last-of-type {
+    background-color: rgba(163, 212, 89, 0.15);
+    color: var(--green-conifer);
+    border: 1px solid var(--green-conifer);
+}
+
+/*Hovers de los links botones y demas objetos como cards y asi*/
+#content-cursos-destacados .seccion-destacada .card-curso:hover{
+    transform: scale(1.02);
+    transition: all 0.5s ease-in-out;
+}
+
+#content-cursos-destacados .seccion-destacada #direcciones:hover{
+    text-decoration: underline;
+    transform: scale(1.02);
+    transition: all 0.5s ease-in-out;
+}
+
+/* Estilos del modal de login */
+#fondo-login{
+    position: fixed; /* Fija la posición en la pantalla */
+    z-index: 1000; /* Superior a otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Fondo semi-transparente */
+    justify-content: center;
+    align-items: center;
+}
+
+#content-login{
+    width: 20%;
+    height: 60vh;
+    margin: 10% auto;
+    padding: 7% 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4), 0 4px 5px 0 rgba(0,0,0,0.2);
+    border: 1.8px solid var(--primary-variant);
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Botón cerrar del modal */
+#content-login .close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+#content-login .close:hover {
+    color: var(--primary-variant);
+}
+
+#content-login h1{
+    font-size: 2.5rem;
+    margin-bottom: 3%;
+    color: var(--primary-variant);
+}
+#content-login input[type="email"],
+#content-login input[type="password"]{
+    width: 80%;
+    padding: 1%;
+    margin-bottom: 2%;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+#content-login #content-inputs{
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 3%;
+}   
+#content-login .btns-login{
+    width: 48%;
+    padding: 1%;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    color: var(--white);
+    background-color: var(--primary-variant);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+#content-login .btns-login:hover{
+    background-color: var(--primary);
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+}
+#ruta-seccion-destacada:hover{
+    text-decoration: underline;
+    transform: scale(1.02);
+    transition: all 0.5s ease-in-out;   
+}

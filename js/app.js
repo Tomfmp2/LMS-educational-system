@@ -136,11 +136,11 @@ function seedDataIfEmpty() {
   
   // Actualizar imágenes de cursos con rutas relativas
   const imageUrlMap = {
-    'JS101': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop',
-    'PY101': 'https://images.unsplash.com/photo-1526374965328-7f5ae4e8b923?w=400&h=300&fit=crop',
-    'REACT101': 'https://images.unsplash.com/photo-1633356022560-694a485b67e0?w=400&h=300&fit=crop',
-    'DB101': 'https://images.unsplash.com/photo-1537432376769-00f5c814b51a?w=400&h=300&fit=crop',
-    'DEVOPS101': 'https://images.unsplash.com/photo-1551547345-9bcb5b0d91c3?w=400&h=300&fit=crop'
+    'JS101': 'https://picsum.photos/400/300?random=1',
+    'PY101': 'https://picsum.photos/400/300?random=2',
+    'REACT101': 'https://picsum.photos/400/300?random=3',
+    'DB101': 'https://picsum.photos/400/300?random=4',
+    'DEVOPS101': 'https://picsum.photos/400/300?random=5'
   };
   
   cursos = cursos.map(curso => {
@@ -156,11 +156,11 @@ function seedDataIfEmpty() {
 
   if (cursos.length === 0 && modulos.length === 0 && lecciones.length === 0) {
     const seededCursos = [
-      { codigo: 'JS101', nombre: 'Curso de JavaScript', descripcion: 'Aprende JavaScript desde cero. Domina la programación web moderna, ES6+, y desarrollo de aplicaciones interactivas con la tecnología más utilizada en el frontend.', docente: 'juan.martinez@lms.edu', imagen: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop' },
-      { codigo: 'PY101', nombre: 'Curso de Python', descripcion: 'Curso completo de Python para principiantes y avanzados. Desde conceptos básicos hasta programación orientada a objetos, web scraping y ciencia de datos.', docente: 'sofia.garcia@lms.edu', imagen: 'https://images.unsplash.com/photo-1526374965328-7f5ae4e8b923?w=400&h=300&fit=crop' },
-      { codigo: 'REACT101', nombre: 'Curso de React y Frontend', descripcion: 'Domina React.js, el framework más popular para desarrollo frontend. Aprende componentes, hooks, state management y construcción de aplicaciones modernas.', docente: 'roberto.lopez@lms.edu', imagen: 'https://images.unsplash.com/photo-1633356022560-694a485b67e0?w=400&h=300&fit=crop' },
-      { codigo: 'DB101', nombre: 'Curso de Bases de Datos y Backend', descripcion: 'Diseña y gestiona bases de datos relacionales. Desarrolla APIs REST robustas con Node.js, manejo de transacciones y arquitectura de aplicaciones.', docente: 'maria.rodriguez@lms.edu', imagen: 'https://images.unsplash.com/photo-1537432376769-00f5c814b51a?w=400&h=300&fit=crop' },
-      { codigo: 'DEVOPS101', nombre: 'Curso de DevOps y Cloud', descripcion: 'Aprende a desplegar, monitorear y mantener aplicaciones en producción. Docker, Kubernetes, AWS y CI/CD para desarrollo profesional.', docente: 'carlos.fernandez@lms.edu', imagen: 'https://images.unsplash.com/photo-1551547345-9bcb5b0d91c3?w=400&h=300&fit=crop' }
+      { codigo: 'JS101', nombre: 'Curso de JavaScript', descripcion: 'Aprende JavaScript desde cero. Domina la programación web moderna, ES6+, y desarrollo de aplicaciones interactivas con la tecnología más utilizada en el frontend.', docente: 'juan.martinez@lms.edu', imagen: 'https://picsum.photos/400/300?random=1' },
+      { codigo: 'PY101', nombre: 'Curso de Python', descripcion: 'Curso completo de Python para principiantes y avanzados. Desde conceptos básicos hasta programación orientada a objetos, web scraping y ciencia de datos.', docente: 'sofia.garcia@lms.edu', imagen: 'https://picsum.photos/400/300?random=2' },
+      { codigo: 'REACT101', nombre: 'Curso de React y Frontend', descripcion: 'Domina React.js, el framework más popular para desarrollo frontend. Aprende componentes, hooks, state management y construcción de aplicaciones modernas.', docente: 'roberto.lopez@lms.edu', imagen: 'https://picsum.photos/400/300?random=3' },
+      { codigo: 'DB101', nombre: 'Curso de Bases de Datos y Backend', descripcion: 'Diseña y gestiona bases de datos relacionales. Desarrolla APIs REST robustas con Node.js, manejo de transacciones y arquitectura de aplicaciones.', docente: 'maria.rodriguez@lms.edu', imagen: 'https://picsum.photos/400/300?random=4' },
+      { codigo: 'DEVOPS101', nombre: 'Curso de DevOps y Cloud', descripcion: 'Aprende a desplegar, monitorear y mantener aplicaciones en producción. Docker, Kubernetes, AWS y CI/CD para desarrollo profesional.', docente: 'carlos.fernandez@lms.edu', imagen: 'https://picsum.photos/400/300?random=5' }
     ];
 
     const seededModulos = [
@@ -305,7 +305,7 @@ function renderHomeFeatured() {
       card.className = 'card-curso';
       card.setAttribute('data-codigo', curso.codigo);
       card.innerHTML = `
-        <img class="portada-curso" src="${curso.imagen || 'https://via.placeholder.com/300x180'}" alt="portada curso">
+        <img class="portada-curso" src="${curso.imagen || 'https://picsum.photos/400/300?random=99'}" alt="portada curso" onerror="this.src='https://picsum.photos/400/300?random=99'">
         <div class="text-card-curso">
           <h2>${curso.nombre}</h2>
           <strong class="text-destacable-cards">Módulos: ${modulos.filter(m => m.cursoCodigo === curso.codigo).length}</strong>

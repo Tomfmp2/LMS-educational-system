@@ -713,10 +713,10 @@ export function renderCursos() {
         ${estaEnFavoritos ? '<div class="badge-favorito">En Favoritos</div>' : ''}
         <div class="curso-imagen-wrapper">
           <img 
-            src="${curso.imagen || './assets/img/students-1807505_1920.jpg'}" 
+            src="${curso.imagen || 'https://picsum.photos/400/300?random=99'}" 
             alt="${curso.nombre}"
             loading="lazy"
-            onerror="this.src='./assets/img/students-1807505_1920.jpg'"
+            onerror="this.src='https://picsum.photos/400/300?random=99'"
           >
           <div class="overlay-gradient"></div>
         </div>

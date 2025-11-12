@@ -1,4 +1,5 @@
 // logic/login.js - Lógica del modal de login
+import { notificacionExito, notificacionError, notificacionAdvertencia } from '../utils/notificaciones.js';
 
 export function initializeLoginLogic() {
   console.log('Inicializando lógica de login...');
@@ -80,7 +81,7 @@ export function initializeLoginLogic() {
       const usuariosJSON = localStorage.getItem('usuarios');
       
       if (!usuariosJSON) {
-        alert('No hay cuentas registradas en el sistema');
+        notificacionAdvertencia('No hay cuentas registradas en el sistema');
         return false;
       }
 
@@ -89,19 +90,13 @@ export function initializeLoginLogic() {
       // Verificar si existe el usuario con ese correo
       const usuario = usuarios[email];
       if (!usuario) {
-        const errorMensaje = `
-          La cuenta ${email} no está registrada en el sistema.
-          Por favor:
-          - Verifica que el correo esté bien escrito, o
-          - Si es tu primera vez, haz clic en "Crear Cuenta"
-        `;
-        alert(errorMensaje);
+        notificacionError(`La cuenta ${email} no está registrada. Verifica el correo o crea una nueva cuenta.`);
         return false;
       }
 
       // Verificar la contraseña
       if (usuario.contrasena !== password) {
-        alert('La contraseña es incorrecta');
+        notificacionError('La contraseña es incorrecta');
         return false;
       }
       
@@ -123,13 +118,12 @@ export function initializeLoginLogic() {
         header.actualizarEstado(sesionData);
       }
       
-      alert('¡Bienvenido ' + usuario.nombreCompleto + '!');
       ocultarLogin();
       return true;
 
     } catch (error) {
       console.error('Error durante el login:', error);
-      alert('Ocurrió un error al intentar iniciar sesión');
+      notificacionError('Ocurrió un error al intentar iniciar sesión');
       return false;
     }
   }
@@ -141,7 +135,7 @@ export function initializeLoginLogic() {
       const password = inputContraseña ? inputContraseña.value.trim() : '';
 
       if (!email || !password) {
-        alert('Por favor, ingresa email y contraseña');
+        notificacionAdvertencia('Por favor ingresa email y contraseña');
         return;
       }
 

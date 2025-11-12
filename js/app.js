@@ -50,78 +50,197 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function seedDataIfEmpty() {
-  const profesores = JSON.parse(localStorage.getItem('profesores') || '[]');
+  let profesores = JSON.parse(localStorage.getItem('profesores') || '[]');
+  
+  // Limpiar profesores inválidos (undefined, null, sin correo o sin nombre válido)
+  profesores = profesores.filter(p => 
+    p && p.correo && p.nombre && 
+    typeof p === 'object' && 
+    p.correo !== 'undefined' && 
+    p.nombre !== 'undefined' &&
+    p.correo.includes('@')
+  );
+  
   if (profesores.length === 0) {
     const defaultProfes = [
-      { correo: 'maria.garcia@abc.edu', nombre: 'María García' },
-      { correo: 'juan.perez@abc.edu', nombre: 'Juan Pérez' },
-      { correo: 'ana.lopez@abc.edu', nombre: 'Ana López' }
+      {
+        id: '1',
+        nombre: 'Juan Martínez',
+        correo: 'juan.martinez@lms.edu',
+        especialidad: 'JavaScript',
+        bio: 'Experto en JavaScript moderno, ES6+ y desarrollo de aplicaciones interactivas. 12 años de experiencia en frontend.',
+        fechaRegistro: new Date().toLocaleDateString('es-CO')
+      },
+      {
+        id: '2',
+        nombre: 'Sofia García',
+        correo: 'sofia.garcia@lms.edu',
+        especialidad: 'Python',
+        bio: 'Especialista en Python, machine learning y análisis de datos. Desarrolladora full-stack con experiencia en startups.',
+        fechaRegistro: new Date().toLocaleDateString('es-CO')
+      },
+      {
+        id: '3',
+        nombre: 'Roberto López',
+        correo: 'roberto.lopez@lms.edu',
+        especialidad: 'React y Frontend',
+        bio: 'Arquitecto de soluciones frontend con React.js y frameworks modernos. Certificado en UX/UI design.',
+        fechaRegistro: new Date().toLocaleDateString('es-CO')
+      },
+      {
+        id: '4',
+        nombre: 'María Rodríguez',
+        correo: 'maria.rodriguez@lms.edu',
+        especialidad: 'Bases de Datos y Backend',
+        bio: 'Ingeniera de bases de datos y desarrolladora backend. Especialista en Node.js, Express y arquitecturas escalables.',
+        fechaRegistro: new Date().toLocaleDateString('es-CO')
+      },
+      {
+        id: '5',
+        nombre: 'Carlos Fernández',
+        correo: 'carlos.fernandez@lms.edu',
+        especialidad: 'DevOps y Cloud',
+        bio: 'DevOps engineer especializado en Docker, Kubernetes y AWS. Experto en CI/CD y automatización.',
+        fechaRegistro: new Date().toLocaleDateString('es-CO')
+      }
     ];
-    localStorage.setItem('profesores', JSON.stringify(defaultProfes));
+    profesores = defaultProfes;
   }
+  
+  localStorage.setItem('profesores', JSON.stringify(profesores));
 
-  const cursos = JSON.parse(localStorage.getItem('cursos') || '[]');
-  const modulos = JSON.parse(localStorage.getItem('modulos') || '[]');
-  const lecciones = JSON.parse(localStorage.getItem('lecciones') || '[]');
+  let cursos = JSON.parse(localStorage.getItem('cursos') || '[]');
+  let modulos = JSON.parse(localStorage.getItem('modulos') || '[]');
+  let lecciones = JSON.parse(localStorage.getItem('lecciones') || '[]');
+
+  // Limpiar cursos con docentes inválidos
+  cursos = cursos.filter(c => 
+    c && c.codigo && c.nombre && c.docente &&
+    c.docente !== 'undefined' && c.nombre !== 'undefined' &&
+    profesores.some(p => p.correo === c.docente)
+  );
+  
+  // Limpiar módulos de cursos eliminados
+  modulos = modulos.filter(m => 
+    m && m.codigo && m.cursoCodigo &&
+    m.cursoCodigo !== 'undefined' && m.codigo !== 'undefined' &&
+    cursos.some(c => c.codigo === m.cursoCodigo)
+  );
+  
+  // Limpiar lecciones de módulos eliminados
+  lecciones = lecciones.filter(l => 
+    l && l.id && l.moduloCodigo &&
+    l.moduloCodigo !== 'undefined' && l.id !== 'undefined' &&
+    modulos.some(m => m.codigo === l.moduloCodigo)
+  );
+  
+  localStorage.setItem('cursos', JSON.stringify(cursos));
+  localStorage.setItem('modulos', JSON.stringify(modulos));
+  localStorage.setItem('lecciones', JSON.stringify(lecciones));
 
   if (cursos.length === 0 && modulos.length === 0 && lecciones.length === 0) {
     const seededCursos = [
-      { codigo: 'JS101', nombre: 'JavaScript desde Cero', descripcion: 'Aprende los fundamentos de JavaScript con proyectos prácticos.', docente: 'juan.perez@abc.edu', imagen: '/assets/img/fotis-fotopoulos-6sAl6aQ4OWI-unsplash.jpg' },
-      { codigo: 'HTMLCSS', nombre: 'HTML y CSS Moderno', descripcion: 'Maqueta sitios modernos, responsive y accesibles.', docente: 'maria.garcia@abc.edu', imagen: '/assets/img/concepto-de-collage-html-y-css.jpg' },
-      { codigo: 'SEC101', nombre: 'Introducción a la Ciberseguridad', descripcion: 'Conceptos clave y buenas prácticas para asegurar sistemas.', docente: 'ana.lopez@abc.edu', imagen: '/assets/img/ingeniero-informatico-escribiendo-en-el-teclado-codigo-para-construir-cortafuegos.jpg' },
-      { codigo: 'PY101', nombre: 'Python Básico', descripcion: 'Sintaxis, estructuras de datos y scripts esenciales.', docente: 'maria.garcia@abc.edu', imagen: '/assets/img/imagenFondoprograming.jpg' },
-      { codigo: 'DBSQL', nombre: 'Bases de Datos SQL', descripcion: 'Modelado, consultas y prácticas con SQL.', docente: 'juan.perez@abc.edu', imagen: '/assets/img/programador-profesional-trabajando-hasta-tarde-en-la-oscura-oficina.jpg' },
-      { codigo: 'UXUI', nombre: 'UX/UI para Web', descripcion: 'Principios de diseño centrado en el usuario.', docente: 'ana.lopez@abc.edu', imagen: '/assets/img/christina-wocintechchat-com-SJvDxw0azqw-unsplash.jpg' },
-      { codigo: 'REACT', nombre: 'React desde Cero', descripcion: 'Componentes, estado y efectos con React.', docente: 'juan.perez@abc.edu', imagen: '/assets/img/people-2557399_1280.jpg' },
-      { codigo: 'NODEJS', nombre: 'Node.js y APIs', descripcion: 'Construcción de APIs REST con Node y Express.', docente: 'maria.garcia@abc.edu', imagen: '/assets/img/wonderlane-b9-odQi5oDo-unsplash.jpg' },
-      { codigo: 'GIT101', nombre: 'Control de Versiones con Git', descripcion: 'Flujos de trabajo y colaboración efectiva.', docente: 'ana.lopez@abc.edu', imagen: '/assets/img/juan-encalada-WC7KIHo13Fc-unsplash.jpg' }
+      { codigo: 'JS101', nombre: 'Curso de JavaScript', descripcion: 'Aprende JavaScript desde cero. Domina la programación web moderna, ES6+, y desarrollo de aplicaciones interactivas con la tecnología más utilizada en el frontend.', docente: 'juan.martinez@lms.edu', imagen: '/assets/img/fotis-fotopoulos-6sAl6aQ4OWI-unsplash.jpg' },
+      { codigo: 'PY101', nombre: 'Curso de Python', descripcion: 'Curso completo de Python para principiantes y avanzados. Desde conceptos básicos hasta programación orientada a objetos, web scraping y ciencia de datos.', docente: 'sofia.garcia@lms.edu', imagen: '/assets/img/concepto-de-collage-html-y-css.jpg' },
+      { codigo: 'REACT101', nombre: 'Curso de React y Frontend', descripcion: 'Domina React.js, el framework más popular para desarrollo frontend. Aprende componentes, hooks, state management y construcción de aplicaciones modernas.', docente: 'roberto.lopez@lms.edu', imagen: '/assets/img/concepto-de-collage-html-y-css-con-persona.jpg' },
+      { codigo: 'DB101', nombre: 'Curso de Bases de Datos y Backend', descripcion: 'Diseña y gestiona bases de datos relacionales. Desarrolla APIs REST robustas con Node.js, manejo de transacciones y arquitectura de aplicaciones.', docente: 'maria.rodriguez@lms.edu', imagen: '/assets/img/christina-wocintechchat-com-SJvDxw0azqw-unsplash.jpg' },
+      { codigo: 'DEVOPS101', nombre: 'Curso de DevOps y Cloud', descripcion: 'Aprende a desplegar, monitorear y mantener aplicaciones en producción. Docker, Kubernetes, AWS y CI/CD para desarrollo profesional.', docente: 'carlos.fernandez@lms.edu', imagen: '/assets/img/concepto-de-fondo-de-programacion.jpg' }
     ];
 
     const seededModulos = [
       // JS101
-      { codigo: 'MJS1', nombre: 'Fundamentos', descripcion: 'Variables, tipos y operadores', cursoCodigo: 'JS101' },
-      { codigo: 'MJS2', nombre: 'DOM y Eventos', descripcion: 'Interacción con la UI', cursoCodigo: 'JS101' },
-      // HTMLCSS
-      { codigo: 'MHC1', nombre: 'HTML5', descripcion: 'Estructura semántica', cursoCodigo: 'HTMLCSS' },
-      { codigo: 'MHC2', nombre: 'CSS3', descripcion: 'Estilos modernos y responsive', cursoCodigo: 'HTMLCSS' },
-      // SEC101
-      { codigo: 'MSC1', nombre: 'Conceptos Básicos', descripcion: 'Amenazas y vulnerabilidades', cursoCodigo: 'SEC101' },
+      { codigo: 'MJS1', nombre: 'Fundamentos de JavaScript', descripcion: 'Variables, tipos de datos y operadores básicos', cursoCodigo: 'JS101' },
+      { codigo: 'MJS2', nombre: 'Control de Flujo', descripcion: 'Condicionales y bucles', cursoCodigo: 'JS101' },
+      { codigo: 'MJS3', nombre: 'Funciones y Scope', descripcion: 'Funciones, arrow functions y contexto this', cursoCodigo: 'JS101' },
+      { codigo: 'MJS4', nombre: 'DOM y Eventos', descripcion: 'Manipulación del DOM y manejo de eventos', cursoCodigo: 'JS101' },
       // PY101
-      { codigo: 'MPY1', nombre: 'Sintaxis y Tipos', descripcion: 'Introducción a Python', cursoCodigo: 'PY101' },
-      // DBSQL
-      { codigo: 'MDB1', nombre: 'Modelado Relacional', descripcion: 'Entidades y relaciones', cursoCodigo: 'DBSQL' },
-      // UXUI
-      { codigo: 'MUX1', nombre: 'Fundamentos UX', descripcion: 'Heurísticas y research', cursoCodigo: 'UXUI' },
-      // REACT
-      { codigo: 'MRE1', nombre: 'Fundamentos de React', descripcion: 'JSX, props y estado', cursoCodigo: 'REACT' },
-      // NODEJS
-      { codigo: 'MNO1', nombre: 'APIs con Express', descripcion: 'Rutas, middlewares', cursoCodigo: 'NODEJS' },
-      // GIT101
-      { codigo: 'MGT1', nombre: 'Flujos con Git', descripcion: 'Branching y merges', cursoCodigo: 'GIT101' }
+      { codigo: 'MPY1', nombre: 'Introducción a Python', descripcion: 'Configuración, sintaxis básica y estructuras de datos', cursoCodigo: 'PY101' },
+      { codigo: 'MPY2', nombre: 'Programación Orientada a Objetos', descripcion: 'Clases, herencia y polimorfismo', cursoCodigo: 'PY101' },
+      { codigo: 'MPY3', nombre: 'Manejo de Archivos y Excepciones', descripcion: 'I/O de archivos y manejo de errores', cursoCodigo: 'PY101' },
+      { codigo: 'MPY4', nombre: 'Librerías Populares', descripcion: 'NumPy, Pandas y Matplotlib', cursoCodigo: 'PY101' },
+      // REACT101
+      { codigo: 'MRE1', nombre: 'Conceptos Básicos de React', descripcion: 'Componentes, JSX y props', cursoCodigo: 'REACT101' },
+      { codigo: 'MRE2', nombre: 'Hooks y Estado', descripcion: 'useState, useEffect y custom hooks', cursoCodigo: 'REACT101' },
+      { codigo: 'MRE3', nombre: 'Routing y Navegación', descripcion: 'React Router y navegación entre páginas', cursoCodigo: 'REACT101' },
+      { codigo: 'MRE4', nombre: 'Estado Global', descripcion: 'Context API y Redux', cursoCodigo: 'REACT101' },
+      // DB101
+      { codigo: 'MDB1', nombre: 'SQL Básico', descripcion: 'SELECT, INSERT, UPDATE, DELETE y JOINs', cursoCodigo: 'DB101' },
+      { codigo: 'MDB2', nombre: 'Diseño de Bases de Datos', descripcion: 'Normalización y diagrama entidad-relación', cursoCodigo: 'DB101' },
+      { codigo: 'MDB3', nombre: 'APIs REST', descripcion: 'Crear endpoints y manejar solicitudes HTTP', cursoCodigo: 'DB101' },
+      { codigo: 'MDB4', nombre: 'Seguridad y Optimización', descripcion: 'Consultas optimizadas y protección de datos', cursoCodigo: 'DB101' },
+      // DEVOPS101
+      { codigo: 'MDV1', nombre: 'Introducción a Docker', descripcion: 'Contenedores, imágenes y docker-compose', cursoCodigo: 'DEVOPS101' },
+      { codigo: 'MDV2', nombre: 'Orquestación con Kubernetes', descripcion: 'Pods, servicios y deployments', cursoCodigo: 'DEVOPS101' },
+      { codigo: 'MDV3', nombre: 'Integración Continua', descripcion: 'GitHub Actions, GitLab CI y Jenkins', cursoCodigo: 'DEVOPS101' },
+      { codigo: 'MDV4', nombre: 'Despliegue en Cloud', descripcion: 'AWS, Google Cloud y Azure', cursoCodigo: 'DEVOPS101' }
     ];
 
     const seededLecciones = [
       // JS101
-      { id: 'L1', titulo: 'Variables y Tipos', horas: 2, contenido: 'Tipos primitivos y conversión de tipos.', multimedia: [], moduloCodigo: 'MJS1' },
-      { id: 'L2', titulo: 'Funciones', horas: 2, contenido: 'Declaración, expresión y arrow functions.', multimedia: [], moduloCodigo: 'MJS1' },
-      { id: 'L3', titulo: 'Manipulando el DOM', horas: 3, contenido: 'Selectores, creación y eventos.', multimedia: [], moduloCodigo: 'MJS2' },
-      // HTMLCSS
-      { id: 'L4', titulo: 'Etiquetas Semánticas', horas: 2, contenido: 'header, main, footer, article, section.', multimedia: [], moduloCodigo: 'MHC1' },
-      { id: 'L5', titulo: 'Flexbox y Grid', horas: 3, contenido: 'Layouts modernos en CSS.', multimedia: [], moduloCodigo: 'MHC2' },
-      // SEC101
-      { id: 'L6', titulo: 'Ataques Comunes', horas: 2, contenido: 'Phishing, XSS, SQLi y mitigación.', multimedia: [], moduloCodigo: 'MSC1' },
+      { id: 'L1', titulo: 'Variables y Tipos de Datos', horas: 2, contenido: 'Aprende sobre var, let, const y los tipos primitivos de JavaScript', multimedia: [], moduloCodigo: 'MJS1' },
+      { id: 'L2', titulo: 'Operadores y Expresiones', horas: 2, contenido: 'Operadores aritméticos, lógicos y de comparación', multimedia: [], moduloCodigo: 'MJS1' },
+      { id: 'L3', titulo: 'Conversión de Tipos', horas: 2, contenido: 'Coerción y conversión explícita de tipos', multimedia: [], moduloCodigo: 'MJS1' },
+      { id: 'L4', titulo: 'Sentencias if/else', horas: 2, contenido: 'Condicionales simples y compuestos', multimedia: [], moduloCodigo: 'MJS2' },
+      { id: 'L5', titulo: 'Switch y Ternario', horas: 2, contenido: 'Otras formas de control de flujo', multimedia: [], moduloCodigo: 'MJS2' },
+      { id: 'L6', titulo: 'Bucles for y while', horas: 2, contenido: 'Iteración sobre colecciones', multimedia: [], moduloCodigo: 'MJS2' },
+      { id: 'L7', titulo: 'Declaración de Funciones', horas: 2, contenido: 'Funciones regulares y expresiones de función', multimedia: [], moduloCodigo: 'MJS3' },
+      { id: 'L8', titulo: 'Arrow Functions', horas: 2, contenido: 'Sintaxis moderna y diferencias con funciones regulares', multimedia: [], moduloCodigo: 'MJS3' },
+      { id: 'L9', titulo: 'Scope y Closure', horas: 2, contenido: 'Ámbito léxico y closures en JavaScript', multimedia: [], moduloCodigo: 'MJS3' },
+      { id: 'L10', titulo: 'Selección de Elementos', horas: 2, contenido: 'querySelector, getElementById y métodos de selección', multimedia: [], moduloCodigo: 'MJS4' },
+      { id: 'L11', titulo: 'Manipulación del DOM', horas: 2, contenido: 'Crear, modificar y eliminar elementos', multimedia: [], moduloCodigo: 'MJS4' },
+      { id: 'L12', titulo: 'Manejadores de Eventos', horas: 2, contenido: 'addEventListener y manejo de eventos', multimedia: [], moduloCodigo: 'MJS4' },
       // PY101
-      { id: 'L7', titulo: 'Tipos y Colecciones', horas: 2, contenido: 'Listas, tuplas y diccionarios.', multimedia: [], moduloCodigo: 'MPY1' },
-      // DBSQL
-      { id: 'L8', titulo: 'Normalización', horas: 2, contenido: '1FN, 2FN, 3FN y BCNF.', multimedia: [], moduloCodigo: 'MDB1' },
-      // UXUI
-      { id: 'L9', titulo: 'Heurísticas de Nielsen', horas: 2, contenido: 'Aplicación práctica de heurísticas.', multimedia: [], moduloCodigo: 'MUX1' },
-      // REACT
-      { id: 'L10', titulo: 'JSX y Props', horas: 2, contenido: 'Componentes y composición.', multimedia: [], moduloCodigo: 'MRE1' },
-      // NODEJS
-      { id: 'L11', titulo: 'Rutas y Controladores', horas: 2, contenido: 'Endpoints REST básicos.', multimedia: [], moduloCodigo: 'MNO1' },
-      // GIT101
-      { id: 'L12', titulo: 'Branching Strategy', horas: 2, contenido: 'Git Flow y trunk-based.', multimedia: [], moduloCodigo: 'MGT1' }
+      { id: 'L13', titulo: 'Instalación y Configuración', horas: 2, contenido: 'Instalar Python y configurar el entorno', multimedia: [], moduloCodigo: 'MPY1' },
+      { id: 'L14', titulo: 'Tu Primer Programa', horas: 2, contenido: 'print(), input() y primeros pasos', multimedia: [], moduloCodigo: 'MPY1' },
+      { id: 'L15', titulo: 'Tipos y Variables', horas: 2, contenido: 'Enteros, flotantes, strings y booleanos', multimedia: [], moduloCodigo: 'MPY1' },
+      { id: 'L16', titulo: 'Clases y Objetos', horas: 2, contenido: 'Definir clases, constructores e instancias', multimedia: [], moduloCodigo: 'MPY2' },
+      { id: 'L17', titulo: 'Herencia', horas: 2, contenido: 'Herencia simple y múltiple', multimedia: [], moduloCodigo: 'MPY2' },
+      { id: 'L18', titulo: 'Polimorfismo y Métodos', horas: 2, contenido: 'Métodos abstractos y override', multimedia: [], moduloCodigo: 'MPY2' },
+      { id: 'L19', titulo: 'Lectura y Escritura de Archivos', horas: 2, contenido: 'Operaciones de I/O y manejo de excepciones', multimedia: [], moduloCodigo: 'MPY3' },
+      { id: 'L20', titulo: 'Manejo de Excepciones', horas: 2, contenido: 'Try/except y errores en Python', multimedia: [], moduloCodigo: 'MPY3' },
+      { id: 'L21', titulo: 'Debugging', horas: 2, contenido: 'Técnicas de debugging y logging', multimedia: [], moduloCodigo: 'MPY3' },
+      { id: 'L22', titulo: 'NumPy Basics', horas: 2, contenido: 'Arrays y operaciones matemáticas', multimedia: [], moduloCodigo: 'MPY4' },
+      { id: 'L23', titulo: 'Pandas para Datos', horas: 2, contenido: 'DataFrames y análisis de datos', multimedia: [], moduloCodigo: 'MPY4' },
+      { id: 'L24', titulo: 'Visualización con Matplotlib', horas: 2, contenido: 'Crear gráficos y visualizaciones', multimedia: [], moduloCodigo: 'MPY4' },
+      // REACT101
+      { id: 'L25', titulo: 'Componentes Funcionales', horas: 2, contenido: 'Crear componentes con funciones', multimedia: [], moduloCodigo: 'MRE1' },
+      { id: 'L26', titulo: 'JSX y Props', horas: 2, contenido: 'Sintaxis JSX y pasar datos a componentes', multimedia: [], moduloCodigo: 'MRE1' },
+      { id: 'L27', titulo: 'Renderizado Condicional', horas: 2, contenido: 'Mostrar u ocultar contenido según condiciones', multimedia: [], moduloCodigo: 'MRE1' },
+      { id: 'L28', titulo: 'useState Hook', horas: 2, contenido: 'Gestionar estado en componentes funcionales', multimedia: [], moduloCodigo: 'MRE2' },
+      { id: 'L29', titulo: 'useEffect Hook', horas: 2, contenido: 'Efectos secundarios y ciclo de vida', multimedia: [], moduloCodigo: 'MRE2' },
+      { id: 'L30', titulo: 'Custom Hooks', horas: 2, contenido: 'Crear tus propios hooks reutilizables', multimedia: [], moduloCodigo: 'MRE2' },
+      { id: 'L31', titulo: 'React Router Setup', horas: 2, contenido: 'Instalar y configurar React Router', multimedia: [], moduloCodigo: 'MRE3' },
+      { id: 'L32', titulo: 'Rutas y Links', horas: 2, contenido: 'Crear rutas y navegación entre páginas', multimedia: [], moduloCodigo: 'MRE3' },
+      { id: 'L33', titulo: 'Parámetros de Ruta', horas: 2, contenido: 'Parámetros dinámicos en rutas', multimedia: [], moduloCodigo: 'MRE3' },
+      { id: 'L34', titulo: 'Context API', horas: 2, contenido: 'Gestionar estado global con Context', multimedia: [], moduloCodigo: 'MRE4' },
+      { id: 'L35', titulo: 'Introducción a Redux', horas: 2, contenido: 'Acciones, reducers y store', multimedia: [], moduloCodigo: 'MRE4' },
+      { id: 'L36', titulo: 'Redux en Práctica', horas: 2, contenido: 'Conectar Redux a componentes', multimedia: [], moduloCodigo: 'MRE4' },
+      // DB101
+      { id: 'L37', titulo: 'SELECT y WHERE', horas: 2, contenido: 'Consultas básicas y filtrado de datos', multimedia: [], moduloCodigo: 'MDB1' },
+      { id: 'L38', titulo: 'INSERT, UPDATE, DELETE', horas: 2, contenido: 'Modificación de datos en bases de datos', multimedia: [], moduloCodigo: 'MDB1' },
+      { id: 'L39', titulo: 'JOINs y Relaciones', horas: 2, contenido: 'Combinar datos de múltiples tablas', multimedia: [], moduloCodigo: 'MDB1' },
+      { id: 'L40', titulo: 'Normalización', horas: 2, contenido: 'Primera, segunda y tercera forma normal', multimedia: [], moduloCodigo: 'MDB2' },
+      { id: 'L41', titulo: 'Diagrama Entidad-Relación', horas: 2, contenido: 'Modelar relaciones entre entidades', multimedia: [], moduloCodigo: 'MDB2' },
+      { id: 'L42', titulo: 'Índices y Claves', horas: 2, contenido: 'Claves primarias y foráneas', multimedia: [], moduloCodigo: 'MDB2' },
+      { id: 'L43', titulo: 'Crear APIs REST', horas: 2, contenido: 'Endpoints básicos con Node.js', multimedia: [], moduloCodigo: 'MDB3' },
+      { id: 'L44', titulo: 'HTTP Métodos', horas: 2, contenido: 'GET, POST, PUT, DELETE en APIs', multimedia: [], moduloCodigo: 'MDB3' },
+      { id: 'L45', titulo: 'Middleware y Validación', horas: 2, contenido: 'Validar datos en endpoints', multimedia: [], moduloCodigo: 'MDB3' },
+      { id: 'L46', titulo: 'SQL Injection Prevention', horas: 2, contenido: 'Proteger contra inyecciones SQL', multimedia: [], moduloCodigo: 'MDB4' },
+      { id: 'L47', titulo: 'Optimización de Consultas', horas: 2, contenido: 'Índices y query optimization', multimedia: [], moduloCodigo: 'MDB4' },
+      { id: 'L48', titulo: 'Backup y Recovery', horas: 2, contenido: 'Estrategias de backup de datos', multimedia: [], moduloCodigo: 'MDB4' },
+      // DEVOPS101
+      { id: 'L49', titulo: 'Conceptos Docker', horas: 2, contenido: 'Imágenes, contenedores y registros', multimedia: [], moduloCodigo: 'MDV1' },
+      { id: 'L50', titulo: 'Dockerfile', horas: 2, contenido: 'Crear imágenes personalizadas', multimedia: [], moduloCodigo: 'MDV1' },
+      { id: 'L51', titulo: 'Docker Compose', horas: 2, contenido: 'Orquestar múltiples contenedores', multimedia: [], moduloCodigo: 'MDV1' },
+      { id: 'L52', titulo: 'Arquitectura Kubernetes', horas: 2, contenido: 'Master, nodos y componentes', multimedia: [], moduloCodigo: 'MDV2' },
+      { id: 'L53', titulo: 'Pods y Servicios', horas: 2, contenido: 'Desplegar y exponer aplicaciones', multimedia: [], moduloCodigo: 'MDV2' },
+      { id: 'L54', titulo: 'Deployments', horas: 2, contenido: 'Gestionar réplicas y actualizaciones', multimedia: [], moduloCodigo: 'MDV2' },
+      { id: 'L55', titulo: 'GitHub Actions', horas: 2, contenido: 'Workflows y automatización', multimedia: [], moduloCodigo: 'MDV3' },
+      { id: 'L56', titulo: 'Testing Automático', horas: 2, contenido: 'Ejecutar tests en CI/CD', multimedia: [], moduloCodigo: 'MDV3' },
+      { id: 'L57', titulo: 'Build y Deploy', horas: 2, contenido: 'Pipeline de construcción y despliegue', multimedia: [], moduloCodigo: 'MDV3' },
+      { id: 'L58', titulo: 'Introducción a AWS', horas: 2, contenido: 'EC2, S3 y servicios básicos', multimedia: [], moduloCodigo: 'MDV4' },
+      { id: 'L59', titulo: 'Configuración de Aplicaciones', horas: 2, contenido: 'Variables de entorno y configuración', multimedia: [], moduloCodigo: 'MDV4' },
+      { id: 'L60', titulo: 'Monitoreo y Escalado', horas: 2, contenido: 'CloudWatch y auto-scaling', multimedia: [], moduloCodigo: 'MDV4' }
     ];
 
     localStorage.setItem('cursos', JSON.stringify(seededCursos));

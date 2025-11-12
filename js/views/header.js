@@ -1,4 +1,6 @@
 // js/views/header.js
+import { notificacionExito, notificacionError, notificacionAdvertencia } from '../utils/notificaciones.js';
+
 export class header extends HTMLElement {
   constructor() {
     super();
@@ -17,6 +19,7 @@ export class header extends HTMLElement {
 
   connectedCallback() {
     this.render();
+    this.mostrarMensaje();
     if (this.sesion) {
       this.setupMenuUsuario();
     } else {
@@ -43,11 +46,55 @@ export class header extends HTMLElement {
             align-items: center;
             border-bottom: 1px solid rgba(0,0,0,0.8);
         }
-        #logo { width: 4vw; height: 8vh; object-fit: contain; }
+        #logo { width: 4vw; height: 8vh; object-fit: contain; cursor: pointer; }
+        #header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        #welcome-message {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            min-height: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            min-width: 200px;
+        }
+        #welcome-message.show {
+            animation: slideInWelcome 0.6s ease;
+        }
+        @keyframes slideInWelcome {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        #welcome-message.hide {
+            animation: slideOutWelcome 0.4s ease;
+        }
+        @keyframes slideOutWelcome {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
         #header-inner div { display: flex; gap: 2rem; align-items: center; }
         #header-inner a {
             text-decoration: none; color: inherit; font-weight: bold;
-            font-size: 1.6rem; transition: all 0.5s ease-in-out;
+            font-size: 1.6rem; transition: all 0.3s ease;
         }
         .btn-cuentas {
             padding: 0.5rem 1rem; font-size: 1rem; border-radius: 8px;
@@ -97,20 +144,35 @@ export class header extends HTMLElement {
             display: flex; align-items: center; gap: 0.8rem;
             cursor: pointer; transition: all 0.2s ease; font-weight: 500;
         }
-        .menu-item:hover { color: var(--primary-variant, #00ADB5); }
+        .menu-item:hover { color: var(--primary-variant, #00ADB5); background-color: #f8f9fa; }
         .menu-separator { height: 1px; background-color: #eee; margin: 0.5rem 0; }
         #btn-cerrar-sesion {
             color: #ffffff; background-color: #B31312;
-            border-radius: 16px; padding: 0.8rem 1rem;
+            border-radius: 8px; padding: 0.8rem 1rem;
             cursor: pointer; transition: all 0.3s ease;
+            margin: 0.5rem;
         }
         #btn-cerrar-sesion:hover {
-            background-color: #ffffff; color: #B31312; border: 2px solid #B31312;
+            background-color: #8B0000; transform: scale(1.02);
+        }
+        @media (max-width: 1024px) {
+            #welcome-message {
+                font-size: 1rem;
+                min-width: 150px;
+            }
+        }
+        @media (max-width: 768px) {
+            #welcome-message {
+                display: none;
+            }
         }
     </style>
 
     <header id="header-inner">
-      <img id="logo" src="../../assets/icons/bloquear3.png" alt="Educate ABC Logo" />
+      <div id="header-left">
+        <img id="logo" src="../../assets/icons/bloquear3.svg" alt="Educate ABC Logo" />
+        <div id="welcome-message"></div>
+      </div>
       <div>
         <a class="direcciones" href="#" id="link-home">Home</a>
         <a class="direcciones" href="#" id="link-cursos">Cursos</a>
@@ -126,9 +188,10 @@ export class header extends HTMLElement {
               <div class="menu-separator"></div>
               ${this.sesion.isAdmin ? `
                 <div class="menu-item" id="btn-crear-curso">Crear Cursos</div>
-                <div class="menu-item" id="btn-agregar-profesor">Agregar Profesores</div>
+                <div class="menu-item" id="btn-gestion-profesores">Gestionar Profesores</div>
               ` : `
                 <div class="menu-item" id="btn-mis-cursos">Mis Cursos</div>
+                <div class="menu-item" id="btn-favoritos">Favoritos</div>
               `}
               <div class="menu-separator"></div>
               <div class="menu-item" id="btn-cerrar-sesion">
@@ -147,12 +210,15 @@ export class header extends HTMLElement {
 
   setupLinkHome() {
     const link = this.shadowRoot.querySelector('#link-home');
-    if (link) {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        location.reload();
-      });
-    }
+    const logo = this.shadowRoot.querySelector('#logo');
+    
+    const recargarHome = (e) => {
+      e.preventDefault();
+      location.reload();
+    };
+    
+    if (link) link.addEventListener('click', recargarHome);
+    if (logo) logo.addEventListener('click', recargarHome);
   }
 
   setupLinkCursos() {
@@ -165,6 +231,7 @@ export class header extends HTMLElement {
         if (section) {
           section.innerHTML = '';
           section.appendChild(renderCursos());
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
     }
@@ -189,12 +256,14 @@ export class header extends HTMLElement {
   }
 
   async setupMenuUsuario() {
+    const { notificacionAdvertencia } = await import('../utils/notificaciones.js');
+    
     const btnUsuario = this.shadowRoot.querySelector('#btn-usuario');
     const menuUsuario = this.shadowRoot.querySelector('#menu-usuario');
     const btnCerrarSesion = this.shadowRoot.querySelector('#btn-cerrar-sesion');
     const btnCrearCurso = this.shadowRoot.querySelector('#btn-crear-curso');
-    const btnAgregarProfesor = this.shadowRoot.querySelector('#btn-agregar-profesor');
     const btnMisCursos = this.shadowRoot.querySelector('#btn-mis-cursos');
+    const btnFavoritos = this.shadowRoot.querySelector('#btn-favoritos');
 
     if (btnUsuario && menuUsuario) {
       btnUsuario.addEventListener('click', (e) => {
@@ -211,60 +280,106 @@ export class header extends HTMLElement {
     }
 
     if (btnCerrarSesion) {
-      btnCerrarSesion.addEventListener('click', () => {
+      btnCerrarSesion.addEventListener('click', async () => {
+        // Logout sin confirm blocking
         localStorage.removeItem('sesionActual');
-        this.actualizarEstado(null);
-        alert('Sesión cerrada exitosamente');
+        
+        // Mostrar mensaje de despedida
+        const welcomeEl = this.shadowRoot.querySelector('#welcome-message');
+        if (welcomeEl) {
+          welcomeEl.textContent = '¡Vuelve pronto!';
+          welcomeEl.classList.remove('show');
+          welcomeEl.classList.add('hide');
+        }
+        
+        // Notificar al usuario
+        notificacionAdvertencia('Sesión cerrada');
+        
+        // Recargar después de un tiempo
+        setTimeout(() => {
+          location.reload();
+        }, 1200);
       });
     }
 
-    // Acciones dinámicas de menú
     if (btnCrearCurso) {
       btnCrearCurso.addEventListener('click', async () => {
         try {
-          console.log('Cargando módulo de crear cursos...');
           const { renderCrearCurso } = await import('../modules/crearCursos.js');
           const section = document.getElementById('section-home');
           if (section) {
             section.innerHTML = '';
-            const moduloCrearCurso = renderCrearCurso();
-            section.appendChild(moduloCrearCurso);
-            console.log('Módulo de crear cursos cargado correctamente');
-            // Scroll suave hacia el módulo
+            section.appendChild(renderCrearCurso());
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           } else {
-            console.error('No se encontró el elemento #section-home');
-            alert('Error: No se pudo encontrar el contenedor principal');
+            console.error('No se encontró el elemento section-home');
+            notificacionError('Error al cargar el contenedor. Recarga la página.');
           }
         } catch (error) {
           console.error('Error al cargar el módulo de crear cursos:', error);
-          alert('Error al cargar el módulo de crear cursos. Por favor, recarga la página.');
+          console.error('Stack:', error.stack);
+          notificacionError(`Error: ${error.message}`);
+        } finally {
+          menuUsuario.classList.remove('visible');
         }
-        menuUsuario.classList.remove('visible');
       });
     }
 
-    if (btnAgregarProfesor) {
-      btnAgregarProfesor.addEventListener('click', async () => {
-        const { renderAgregarProfesores } = await import('../modules/agregarProfesores.js');
-        const section = document.getElementById('section-home');
-        if (section) {
-          section.innerHTML = '';
-          section.appendChild(renderAgregarProfesores());
+    const btnGestionProfesores = this.shadowRoot.querySelector('#btn-gestion-profesores');
+    if (btnGestionProfesores) {
+      btnGestionProfesores.addEventListener('click', async () => {
+        try {
+          const { renderGestionProfesores } = await import('../modules/gestionProfesores.js');
+          const section = document.getElementById('section-home');
+          if (section) {
+            section.innerHTML = '';
+            section.appendChild(renderGestionProfesores());
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch (error) {
+          console.error('Error al cargar la gestión de profesores:', error);
+          notificacionError('Error al cargar gestión de profesores. Recarga la página.');
+        } finally {
+          menuUsuario.classList.remove('visible');
         }
-        menuUsuario.classList.remove('visible');
       });
     }
 
     if (btnMisCursos) {
       btnMisCursos.addEventListener('click', async () => {
-        const { renderMisCursos } = await import('../modules/misCursos.js');
-        const section = document.getElementById('section-home');
-        if (section) {
-          section.innerHTML = '';
-          section.appendChild(renderMisCursos());
+        try {
+          const { renderMisCursos } = await import('../modules/misCursos.js');
+          const section = document.getElementById('section-home');
+          if (section) {
+            section.innerHTML = '';
+            section.appendChild(renderMisCursos());
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch (error) {
+          console.error('Error al cargar mis cursos:', error);
+          notificacionError('Error al cargar tus cursos. Recarga la página.');
+        } finally {
+          menuUsuario.classList.remove('visible');
         }
-        menuUsuario.classList.remove('visible');
+      });
+    }
+
+    if (btnFavoritos) {
+      btnFavoritos.addEventListener('click', async () => {
+        try {
+          const { renderFavoritos } = await import('../modules/favoritos.js');
+          const section = document.getElementById('section-home');
+          if (section) {
+            section.innerHTML = '';
+            section.appendChild(renderFavoritos());
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch (error) {
+          console.error('Error al cargar favoritos:', error);
+          notificacionError('Error al cargar favoritos. Recarga la página.');
+        } finally {
+          menuUsuario.classList.remove('visible');
+        }
       });
     }
   }
@@ -273,10 +388,33 @@ export class header extends HTMLElement {
     return email.charAt(0).toUpperCase();
   }
 
+  mostrarMensaje() {
+    const welcomeEl = this.shadowRoot.querySelector('#welcome-message');
+    if (!welcomeEl) return;
+
+    if (this.sesion) {
+      // Mostrar mensaje de bienvenida
+      const nombre = this.sesion.isAdmin ? 'Admin' : this.sesion.nombreCompleto.split(' ')[0];
+      welcomeEl.textContent = `Bienvenido, ${nombre}`;
+      welcomeEl.classList.remove('hide');
+      welcomeEl.classList.add('show');
+    } else {
+      // Mostrar mensaje de despedida
+      welcomeEl.classList.remove('show');
+      welcomeEl.classList.add('hide');
+      setTimeout(() => {
+        if (!this.sesion) {
+          welcomeEl.textContent = '';
+        }
+      }, 400);
+    }
+  }
+
   actualizarEstado(sesion) {
     this.sesion = sesion;
     this.render();
     setTimeout(() => {
+      this.mostrarMensaje();
       if (sesion) this.setupMenuUsuario();
       else {
         this.setupLoginButton();
@@ -289,4 +427,4 @@ export class header extends HTMLElement {
 }
 
 customElements.define('header-global', header);
-console.log('header-global: "Agregar Profesores" ahora abre agregarProfesores.js (solo admin)');
+console.log('Header global registrado correctamente');

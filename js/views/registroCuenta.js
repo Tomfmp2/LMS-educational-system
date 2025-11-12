@@ -4,8 +4,14 @@ class RegistroCuenta extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     console.log('Renderizando vista del crear cuenta...');
+    // Importar notificaciones
+    const { notificacionExito, notificacionError, notificacionAdvertencia } = await import('../utils/notificaciones.js');
+    this.notificacionExito = notificacionExito;
+    this.notificacionError = notificacionError;
+    this.notificacionAdvertencia = notificacionAdvertencia;
+    
     this.render();
     this.setupEventListeners();
   }
@@ -66,13 +72,7 @@ class RegistroCuenta extends HTMLElement {
       
       // Verificar si el correo ya está registrado
       if (usuarios[correo]) {
-        const errorMensaje = `
-          La cuenta ${correo} ya está registrada en el sistema.
-          Por favor:
-          - Usa otra cuenta de correo electrónico, o
-          - Si es tu cuenta, inicia sesión en lugar de registrarte
-        `;
-        alert(errorMensaje);
+        this.notificacionError(`La cuenta ${correo} ya está registrada. Intenta con otro correo o inicia sesión.`);
         return;
       }
       
@@ -80,22 +80,22 @@ class RegistroCuenta extends HTMLElement {
       usuarios[correo] = usuario;
       localStorage.setItem('usuarios', JSON.stringify(usuarios));
       
-      alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-      this.remove();
+      this.notificacionExito('¡Registro exitoso! Ahora puedes iniciar sesión.', 4000);
+      setTimeout(() => this.remove(), 1000);
     }
   }
 
   validarDatos(correo, data) {
     // Validar que todos los campos estén completos
     if (!correo || !data.nombreCompleto || !data.contrasena) {
-      alert('Por favor complete todos los campos');
+      this.notificacionAdvertencia('Por favor completa todos los campos');
       return false;
     }
 
     // Validar formato de correo
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(correo)) {
-      alert('Por favor ingresa un correo electrónico válido (ejemplo: usuario@dominio.com)');
+      this.notificacionError('Ingresa un correo válido (ejemplo: usuario@dominio.com)');
       return false;
     }
     
@@ -103,13 +103,7 @@ class RegistroCuenta extends HTMLElement {
     try {
       const usuariosExistentes = JSON.parse(localStorage.getItem('usuarios') || '{}');
       if (usuariosExistentes[correo]) {
-        const errorMensaje = `
-          La cuenta ${correo} ya está registrada en el sistema.
-          Por favor:
-          - Usa otra cuenta de correo electrónico, o
-          - Si es tu cuenta, inicia sesión en lugar de registrarte
-        `;
-        alert(errorMensaje);
+        this.notificacionError(`La cuenta ${correo} ya está registrada. Intenta con otro correo o inicia sesión.`);
         return false;
       }
     } catch (e) {
@@ -117,12 +111,12 @@ class RegistroCuenta extends HTMLElement {
     }
     
     if (data.contrasena !== data.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      this.notificacionError('Las contraseñas no coinciden');
       return false;
     }
 
     if (data.contrasena.length < 8) {
-      alert('La contraseña debe tener al menos 8 caracteres');
+      this.notificacionAdvertencia('La contraseña debe tener al menos 8 caracteres');
       return false;
     }
 

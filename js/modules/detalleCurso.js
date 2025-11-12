@@ -411,7 +411,7 @@ export function renderDetalleCurso(codigoCurso) {
     btnIns.style.cssText = 'background:#00ADB5;color:#fff;border:none;padding:0.8rem 1.2rem;border-radius:10px;font-weight:bold;cursor:pointer;margin:0 0 1rem 0;';
     main.insertBefore(btnIns, main.querySelector('#contenido-curso'));
 
-    btnIns.addEventListener('click', () => {
+    btnIns.addEventListener('click', async () => {
       const key = `misCursos_${sesion.correo}`;
       const cursosUsuario = JSON.parse(localStorage.getItem(key) || '[]');
       if (!cursosUsuario.some(c => c.codigo === curso.codigo)) {
@@ -423,9 +423,13 @@ export function renderDetalleCurso(codigoCurso) {
           imagen: curso.imagen
         });
         localStorage.setItem(key, JSON.stringify(cursosUsuario));
-        alert(`¡Te inscribiste en "${curso.nombre}"!`);
+        
+        // Mostrar notificación
+        const { notificacionExito } = await import('../utils/notificaciones.js');
+        notificacionExito(`Te inscribiste en "${curso.nombre}"`);
       } else {
-        alert(`Ya estás inscrito en "${curso.nombre}"`);
+        const { notificacionAdvertencia } = await import('../utils/notificaciones.js');
+        notificacionAdvertencia(`Ya estás inscrito en "${curso.nombre}"`);
       }
     });
   }

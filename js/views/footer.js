@@ -109,14 +109,14 @@ export class Footer extends HTMLElement {
         <div class="footer-content">
             <!-- Sección Acerca de -->
             <div class="footer-section">
-                <img class="footer-logo" src="../../assets/icons/bloquear3.png" alt="ABC Logo" />
+                <img class="footer-logo" src="../../assets/icons/bloquear3.svg" alt="ABC Logo" />
                 <h3>Educate ABC</h3>
                 <p>Transformando vidas a través de la educación en línea de calidad. Aprende a tu ritmo, alcanza tus metas.</p>
                 <div class="social-links">
-                    <a href="#" title="Facebook"><img class="logos-redSocial" src="../../assets/icons/facebook.png" alt="logo facebook"></a>
-                    <a href="#" title="Twitter"><img class="logos-redSocial" src="../../assets/icons/logotipos.png" alt="logo facebook"></a>
-                    <a href="#" title="LinkedIn"><img class="logos-redSocial" src="../../assets/icons/linkedin.png" alt="logo facebook"></a>
-                    <a href="#" title="Instagram"><img class="logos-redSocial" src="../../assets/icons/instagram.png" alt="logo facebook"></a>
+                    <a href="#" title="Facebook"><img class="logos-redSocial" src="../../assets/icons/facebook.svg" alt="logo facebook"></a>
+                    <a href="#" title="Twitter"><img class="logos-redSocial" src="../../assets/icons/logotipos.svg" alt="logo facebook"></a>
+                    <a href="#" title="LinkedIn"><img class="logos-redSocial" src="../../assets/icons/linkedin.svg" alt="logo facebook"></a>
+                    <a href="#" title="Instagram"><img class="logos-redSocial" src="../../assets/icons/instagram.svg" alt="logo facebook"></a>
                 </div>
             </div>
             
@@ -154,8 +154,8 @@ export class Footer extends HTMLElement {
                     <li><a href="#faq">Preguntas Frecuentes</a></li>
                 </ul>
                 <p style="margin-top: 1rem;">
-                    <img class="logos-redSocial" src="../../assets/icons/gmail.png" alt="logo gmail"> soporte@educateabc.com<br>
-                    <img class="logos-redSocial" src="../../assets/icons/llamada-telefonica.png" alt="icono telefono"> +57 123 456 7890
+                    <img class="logos-redSocial" src="../../assets/icons/gmail.svg" alt="logo gmail"> soporte@educateabc.com<br>
+                    <img class="logos-redSocial" src="../../assets/icons/llamada-telefonica.svg" alt="icono telefono"> +57 123 456 7890
                 </p>
             </div>
         </div>

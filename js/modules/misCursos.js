@@ -170,26 +170,35 @@ export function renderMisCursos() {
 
     // Agregar event listeners para eliminar
     contenedor.querySelectorAll('.btn-eliminar').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         e.stopPropagation(); // Evitar que se abra el detalle del curso
         
         const codigoCurso = btn.dataset.codigo;
         const curso = inscritos.find(f => f.codigo === codigoCurso);
         
-        if (curso && confirm(`¿Deseas quitar tu inscripción de "${curso.nombre}"?`)) {
-          // Eliminar de inscritos
+        if (curso) {
+          // Eliminar directamente sin confirm blocking
           const nuevosInscritos = inscritos.filter(f => f.codigo !== codigoCurso);
           localStorage.setItem(key, JSON.stringify(nuevosInscritos));
           
-          // Remover card del DOM
-          btn.closest('.curso-card').remove();
+          // Remover card del DOM con animación
+          const card = btn.closest('.curso-card');
+          card.style.opacity = '0';
+          card.style.transform = 'translateX(-100%)';
+          card.style.transition = 'all 0.3s ease';
           
-          // Si no quedan inscritos, mostrar mensaje
-          if (nuevosInscritos.length === 0) {
-            mensajeVacio.style.display = 'block';
-          }
+          setTimeout(() => {
+            card.remove();
+            
+            // Si no quedan inscritos, mostrar mensaje
+            if (nuevosInscritos.length === 0) {
+              mensajeVacio.style.display = 'block';
+            }
+          }, 300);
           
-          alert(`Inscripción a "${curso.nombre}" cancelada`);
+          // Mostrar notificación de éxito
+          const { notificacionExito } = await import('../utils/notificaciones.js');
+          notificacionExito(`Inscripción a "${curso.nombre}" cancelada`);
         }
       });
     });

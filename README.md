@@ -12,7 +12,7 @@ Un sistema de gestión de aprendizaje (Learning Management System) especializado
 
 La plataforma está disponible en línea en:
 
-**[https://lms-educational-system-g2uxoteu7.vercel.app/](https://lms-educational-system-g2uxoteu7.vercel.app/)**
+**[https://lms-educational-system-fngcl587j.vercel.app/](https://lms-educational-system-fngcl587j.vercel.app/)**
 
 ---
 

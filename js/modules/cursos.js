@@ -713,10 +713,10 @@ export function renderCursos() {
         ${estaEnFavoritos ? '<div class="badge-favorito">En Favoritos</div>' : ''}
         <div class="curso-imagen-wrapper">
           <img 
-            src="${curso.imagen || 'https://picsum.photos/400/300?random=99'}" 
+            src="${curso.imagen || 'https://images.pexels.com/photos/546514/pexels-photo-546514.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" 
             alt="${curso.nombre}"
             loading="lazy"
-            onerror="this.src='https://picsum.photos/400/300?random=99'"
+            onerror="this.src='https://images.pexels.com/photos/546514/pexels-photo-546514.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'"
           >
           <div class="overlay-gradient"></div>
         </div>

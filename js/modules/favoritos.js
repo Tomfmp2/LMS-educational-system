@@ -141,7 +141,7 @@ export function renderFavoritos() {
       card.setAttribute('data-codigo', curso.codigo);
       card.innerHTML = `
         <div class="badge-favorito">Favorito ★</div>
-        <img src="${curso.imagen || 'https://picsum.photos/400/300?random=99'}" alt="${curso.nombre}" onerror="this.src='https://picsum.photos/400/300?random=99'">
+        <img src="${curso.imagen || 'https://images.pexels.com/photos/546514/pexels-photo-546514.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${curso.nombre}" onerror="this.src='https://images.pexels.com/photos/546514/pexels-photo-546514.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'">
         <div class="curso-info">
           <h3>${curso.nombre}</h3>
           <p>${curso.descripcion}</p>

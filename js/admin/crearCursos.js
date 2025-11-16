@@ -1434,6 +1434,11 @@ export function renderCrearCurso() {
           <input type="text" class="form-control form-control-compact" id="edit-imagen" value="${curso.imagen || ''}" placeholder="https://..." />
           <img id="edit-preview" class="image-preview" ${curso.imagen ? `src="${curso.imagen}" style="display:block; width:100%; max-width:300px; margin-top:1rem; border-radius:10px;"` : 'style="display:none;"'} />
         </div>
+
+        <div class="form-group">
+          <label>Contenido del curso</label>
+          <div id="edit-modulos-list" style="max-height:260px; overflow:auto; background:#fbfeff; border-radius:10px; padding:0.75rem; margin-top:0.5rem;"></div>
+        </div>
       </form>
       <div class="modal-footer modal-footer-compact">
         <button type="button" class="btn btn-secondary btn-compact" id="modal-cancelar-edit">Cancelar</button>
@@ -1443,6 +1448,35 @@ export function renderCrearCurso() {
 
     modalOverlay.appendChild(modalContainer);
     document.body.appendChild(modalOverlay);
+
+    // Renderizar módulos y lecciones dentro del modal
+    const modulosListContainer = modalContainer.querySelector('#edit-modulos-list');
+    if (modulosListContainer) {
+      if (modsCurso.length === 0) {
+        modulosListContainer.innerHTML = '<div class="empty-state">Sin módulos</div>';
+      } else {
+        modulosListContainer.innerHTML = modsCurso.map(mod => {
+          const lecs = storage.lecciones.filter(l => l.moduloCodigo === mod.codigo);
+          return `
+            <div class="modal-modulo-card" style="border-bottom:1px solid #eef6f8; padding:0.5rem 0;">
+              <div style="font-weight:700; display:flex; justify-content:space-between; align-items:center;">
+                <div>${mod.codigo}: ${mod.nombre}</div>
+                <div style="font-size:0.85rem; color:#6b7280;">${lecs.length} lección(es)</div>
+              </div>
+              ${mod.descripcion ? `<div style="color:#6b7280; font-size:0.9rem; margin-top:0.25rem;">${mod.descripcion}</div>` : ''}
+              <div style="margin-top:0.5rem;">
+                ${lecs.length === 0 ? '<div style="color:#999;">Sin lecciones</div>' : lecs.map(l => `
+                  <div style="display:flex; justify-content:space-between; gap:0.5rem; padding:0.25rem 0; border-radius:6px;">
+                    <div style="font-size:0.95rem; color:#16324f;">${l.titulo}</div>
+                    <div style="color:#00ADB5; font-size:0.85rem;">${l.horas}h</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
 
     // Cargar docentes
     const selectDocente = modalContainer.querySelector('#edit-docente');

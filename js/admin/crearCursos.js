@@ -605,6 +605,57 @@ export function renderCrearCurso() {
     .modal-footer .btn-primary:active {
       transform: translateY(-1px);
     }
+
+    /* ESTILOS COMPACTOS PARA FORMULARIOS */
+    .form-control-compact {
+      padding: 0.65rem 0.95rem !important;
+      font-size: 0.95rem !important;
+      border-radius: 10px !important;
+      border: 2px solid #e0e8f0 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .form-control-compact:focus {
+      border-color: #00ADB5 !important;
+      box-shadow: 0 0 0 3px rgba(0, 173, 181, 0.12) !important;
+    }
+
+    .form-control-compact::placeholder {
+      color: #99a8c4;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .form-helper {
+      display: block;
+      margin-top: 0.4rem;
+      color: #7a8fa6;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .btn-compact {
+      padding: 0.7rem 1.5rem !important;
+      font-size: 0.92rem !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-compact:hover {
+      transform: translateY(-2px) !important;
+    }
+
+    .modal-footer-compact {
+      gap: 0.8rem !important;
+      padding-top: 1.5rem !important;
+      border-top: 1px solid #e8eef5 !important;
+    }
+
+    .modal-footer-compact .btn-compact {
+      flex: 1;
+      justify-content: center;
+    }
   `;
   document.head.appendChild(styleModal);
 
@@ -998,25 +1049,26 @@ export function renderCrearCurso() {
           const modalContainer = document.createElement('div');
           modalContainer.className = 'modal-contenedor-crear';
           modalContainer.innerHTML = `
-            <div class="modal-header">Editar Módulo</div>
+            <div class="modal-header">📘 Editar Módulo</div>
             <div class="modal-subtitle">Modifica los datos del módulo</div>
             <form class="modal-body">
               <div class="form-group">
-                <label><span class="required">*</span> Código del módulo</label>
-                <input type="text" class="form-control" id="mod-codigo-edit" value="${mod.codigo}" disabled />
+                <label><span class="required">*</span> Código</label>
+                <input type="text" class="form-control form-control-compact" id="mod-codigo-edit" value="${mod.codigo}" disabled />
+                <small class="form-helper">No se puede editar el código</small>
               </div>
               <div class="form-group">
-                <label><span class="required">*</span> Nombre del módulo</label>
-                <input type="text" class="form-control" id="mod-nombre-edit" value="${mod.nombre}" />
+                <label><span class="required">*</span> Nombre</label>
+                <input type="text" class="form-control form-control-compact" id="mod-nombre-edit" value="${mod.nombre}" placeholder="Ej: Fundamentos" />
               </div>
               <div class="form-group">
-                <label>Descripción (opcional)</label>
-                <textarea class="form-control" id="mod-descripcion-edit">${mod.descripcion || ''}</textarea>
+                <label>Descripción 📝</label>
+                <textarea class="form-control form-control-compact" id="mod-descripcion-edit" placeholder="Ej: Conceptos básicos e introducción..." style="min-height: 80px;">${mod.descripcion || ''}</textarea>
               </div>
             </form>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" id="modal-cancelar-edit">Cancelar</button>
-              <button type="button" class="btn btn-primary" id="modal-guardar-edit">Guardar</button>
+            <div class="modal-footer modal-footer-compact">
+              <button type="button" class="btn btn-secondary btn-compact" id="modal-cancelar-edit">Cancelar</button>
+              <button type="button" class="btn btn-primary btn-compact" id="modal-guardar-edit">Guardar</button>
             </div>
           `;
 
@@ -1058,30 +1110,30 @@ export function renderCrearCurso() {
           const modalContainer = document.createElement('div');
           modalContainer.className = 'modal-contenedor-crear';
           modalContainer.innerHTML = `
-            <div class="modal-header">Crear Nueva Lección</div>
+            <div class="modal-header">✏️ Crear Nueva Lección</div>
             <div class="modal-subtitle">Agrega una lección a este módulo</div>
             <form class="modal-body">
               <div class="form-group">
-                <label><span class="required">*</span> Título de la lección</label>
-                <input type="text" class="form-control" id="lec-titulo" placeholder="Ej: Variables y Tipos de Datos" autofocus />
+                <label><span class="required">*</span> Título</label>
+                <input type="text" class="form-control form-control-compact" id="lec-titulo" placeholder="Ej: Variables y Tipos de Datos" autofocus />
               </div>
               <div class="form-group">
-                <label><span class="required">*</span> Intensidad horaria (horas)</label>
-                <input type="number" class="form-control" id="lec-horas" placeholder="2" min="1" max="100" />
+                <label><span class="required">*</span> Horas</label>
+                <input type="number" class="form-control form-control-compact" id="lec-horas" placeholder="2" min="1" max="100" />
               </div>
               <div class="form-group">
-                <label>Contenido (material de estudio)</label>
-                <textarea class="form-control" id="lec-contenido" placeholder="Describe el material y conceptos clave de esta lección..." style="min-height: 120px;"></textarea>
+                <label>Contenido 📚</label>
+                <textarea class="form-control form-control-compact" id="lec-contenido" placeholder="Describe conceptos, ejemplos y puntos clave..." style="min-height: 100px;"></textarea>
               </div>
               <div class="form-group">
-                <label>Recursos multimedia (URLs separadas por coma)</label>
-                <textarea class="form-control" id="lec-multimedia" placeholder="Ej: https://video.com/video1.mp4, https://pdf.com/libro.pdf" style="min-height: 80px;"></textarea>
-                <small style="color: #666; margin-top: 0.3rem;">Puedes agregar enlaces a videos, PDFs, imágenes, etc.</small>
+                <label>Multimedia 🎥</label>
+                <textarea class="form-control form-control-compact" id="lec-multimedia" placeholder="Ej: https://youtube.com/video, https://file.pdf" style="min-height: 70px;"></textarea>
+                <small class="form-helper">Separa URLs con comas (videos, PDFs, imágenes, etc.)</small>
               </div>
             </form>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" id="modal-cancelar-lec">Cancelar</button>
-              <button type="button" class="btn btn-primary" id="modal-guardar-lec">Guardar Lección</button>
+            <div class="modal-footer modal-footer-compact">
+              <button type="button" class="btn btn-secondary btn-compact" id="modal-cancelar-lec">Cancelar</button>
+              <button type="button" class="btn btn-primary btn-compact" id="modal-guardar-lec">Guardar</button>
             </div>
           `;
 
@@ -1154,30 +1206,30 @@ export function renderCrearCurso() {
           const modalContainer = document.createElement('div');
           modalContainer.className = 'modal-contenedor-crear';
           modalContainer.innerHTML = `
-            <div class="modal-header">Editar Lección</div>
+            <div class="modal-header">✏️ Editar Lección</div>
             <div class="modal-subtitle">Modifica los datos de la lección</div>
             <form class="modal-body">
               <div class="form-group">
                 <label><span class="required">*</span> Título</label>
-                <input type="text" class="form-control" id="lec-titulo-edit" value="${lec.titulo}" autofocus />
+                <input type="text" class="form-control form-control-compact" id="lec-titulo-edit" value="${lec.titulo}" autofocus />
               </div>
               <div class="form-group">
-                <label><span class="required">*</span> Intensidad horaria (horas)</label>
-                <input type="number" class="form-control" id="lec-horas-edit" value="${lec.horas}" min="1" max="100" />
+                <label><span class="required">*</span> Horas</label>
+                <input type="number" class="form-control form-control-compact" id="lec-horas-edit" value="${lec.horas}" min="1" max="100" />
               </div>
               <div class="form-group">
-                <label>Contenido (material de estudio)</label>
-                <textarea class="form-control" id="lec-contenido-edit" style="min-height: 120px;">${lec.contenido || ''}</textarea>
+                <label>Contenido 📚</label>
+                <textarea class="form-control form-control-compact" id="lec-contenido-edit" style="min-height: 100px;">${lec.contenido || ''}</textarea>
               </div>
               <div class="form-group">
-                <label>Recursos multimedia (URLs separadas por coma)</label>
-                <textarea class="form-control" id="lec-multimedia-edit" style="min-height: 80px;">${(lec.multimedia || []).join(', ')}</textarea>
-                <small style="color: #666; margin-top: 0.3rem;">Puedes agregar enlaces a videos, PDFs, imágenes, etc.</small>
+                <label>Multimedia 🎥</label>
+                <textarea class="form-control form-control-compact" id="lec-multimedia-edit" style="min-height: 70px;">${(lec.multimedia || []).join(', ')}</textarea>
+                <small class="form-helper">Separa URLs con comas (videos, PDFs, imágenes, etc.)</small>
               </div>
             </form>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" id="modal-cancelar-lec-edit">Cancelar</button>
-              <button type="button" class="btn btn-primary" id="modal-guardar-lec-edit">Guardar</button>
+            <div class="modal-footer modal-footer-compact">
+              <button type="button" class="btn btn-secondary btn-compact" id="modal-cancelar-lec-edit">Cancelar</button>
+              <button type="button" class="btn btn-primary btn-compact" id="modal-guardar-lec-edit">Guardar</button>
             </div>
           `;
 

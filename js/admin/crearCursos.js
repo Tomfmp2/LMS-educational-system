@@ -960,6 +960,7 @@ export function renderCrearCurso() {
         });
         
         renderModulos();
+        validarFormPrincipal();
         cerrarModal();
         mostrarMensaje('Módulo agregado correctamente', 'exito');
       });
@@ -1034,6 +1035,7 @@ export function renderCrearCurso() {
           e.stopPropagation();
           cursoTemp.modulos.splice(parseInt(btn.dataset.delMod), 1);
           renderModulos();
+          validarFormPrincipal();
         });
       });
 
@@ -1092,6 +1094,7 @@ export function renderCrearCurso() {
             cursoTemp.modulos[idx].nombre = nombre;
             cursoTemp.modulos[idx].descripcion = descripcion;
             renderModulos();
+            validarFormPrincipal();
             cerrarModal();
             mostrarMensaje('Módulo actualizado', 'exito');
           });
@@ -1185,6 +1188,7 @@ export function renderCrearCurso() {
             });
             
             renderModulos();
+            validarFormPrincipal();
             cerrarModal();
             mostrarMensaje('Lección agregada correctamente', 'exito');
           });
@@ -1269,6 +1273,7 @@ export function renderCrearCurso() {
             cursoTemp.modulos[idx].lecciones[lidx].contenido = contenido;
             cursoTemp.modulos[idx].lecciones[lidx].multimedia = multimedia;
             renderModulos();
+            validarFormPrincipal();
             cerrarModal();
             mostrarMensaje('Lección actualizada', 'exito');
           });
@@ -1282,6 +1287,7 @@ export function renderCrearCurso() {
           const [idx, lidx] = btn.dataset.delLec.split('-').map(Number);
           cursoTemp.modulos[idx].lecciones.splice(lidx, 1);
           renderModulos();
+          validarFormPrincipal();
         });
       });
 

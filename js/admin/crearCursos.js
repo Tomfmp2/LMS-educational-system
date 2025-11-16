@@ -985,6 +985,7 @@ export function renderCrearCurso() {
               ${mod.descripcion ? `<div class="modulo-info">${mod.descripcion}</div>` : ''}
             </div>
             <div class="modulo-actions">
+              <button type="button" class="btn btn-secondary btn-sm" data-edit-mod="${idx}">Editar</button>
               <button type="button" class="btn btn-danger btn-sm" data-del-mod="${idx}">Eliminar</button>
             </div>
           </div>
@@ -997,8 +998,8 @@ export function renderCrearCurso() {
                     <div class="leccion-info">
                       <div class="leccion-titulo">${l.titulo}</div>
                       <div class="leccion-horas">${l.horas}h</div>
-                      ${l.contenido ? `<div class="leccion-contenido-preview" style="font-size:0.8rem; color:#666; margin-top:0.3rem;">📄 Con contenido</div>` : ''}
-                      ${(l.multimedia && l.multimedia.length > 0) ? `<div class="leccion-multimedia-preview" style="font-size:0.8rem; color:#00ADB5; margin-top:0.2rem;">🎥 ${l.multimedia.length} recurso(s)</div>` : ''}
+                      ${l.contenido ? `<div class="leccion-contenido-preview" style="font-size:0.8rem; color:#666; margin-top:0.3rem;">Contenido disponible</div>` : ''}
+                      ${(l.multimedia && l.multimedia.length > 0) ? `<div class="leccion-multimedia-preview" style="font-size:0.8rem; color:#00ADB5; margin-top:0.2rem;">${l.multimedia.length} recurso(s)</div>` : ''}
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
                       <button type="button" class="btn btn-secondary btn-sm" data-edit-lec="${idx}-${lidx}">Editar</button>
@@ -1049,7 +1050,7 @@ export function renderCrearCurso() {
           const modalContainer = document.createElement('div');
           modalContainer.className = 'modal-contenedor-crear';
           modalContainer.innerHTML = `
-            <div class="modal-header">📘 Editar Módulo</div>
+            <div class="modal-header">Editar Módulo</div>
             <div class="modal-subtitle">Modifica los datos del módulo</div>
             <form class="modal-body">
               <div class="form-group">
@@ -1062,7 +1063,7 @@ export function renderCrearCurso() {
                 <input type="text" class="form-control form-control-compact" id="mod-nombre-edit" value="${mod.nombre}" placeholder="Ej: Fundamentos" />
               </div>
               <div class="form-group">
-                <label>Descripción 📝</label>
+                <label>Descripción</label>
                 <textarea class="form-control form-control-compact" id="mod-descripcion-edit" placeholder="Ej: Conceptos básicos e introducción..." style="min-height: 80px;">${mod.descripcion || ''}</textarea>
               </div>
             </form>
@@ -1110,7 +1111,7 @@ export function renderCrearCurso() {
           const modalContainer = document.createElement('div');
           modalContainer.className = 'modal-contenedor-crear';
           modalContainer.innerHTML = `
-            <div class="modal-header">✏️ Crear Nueva Lección</div>
+            <div class="modal-header">Crear Nueva Lección</div>
             <div class="modal-subtitle">Agrega una lección a este módulo</div>
             <form class="modal-body">
               <div class="form-group">
@@ -1122,11 +1123,11 @@ export function renderCrearCurso() {
                 <input type="number" class="form-control form-control-compact" id="lec-horas" placeholder="2" min="1" max="100" />
               </div>
               <div class="form-group">
-                <label>Contenido 📚</label>
+                <label>Contenido</label>
                 <textarea class="form-control form-control-compact" id="lec-contenido" placeholder="Describe conceptos, ejemplos y puntos clave..." style="min-height: 100px;"></textarea>
               </div>
               <div class="form-group">
-                <label>Multimedia 🎥</label>
+                <label>Multimedia</label>
                 <textarea class="form-control form-control-compact" id="lec-multimedia" placeholder="Ej: https://youtube.com/video, https://file.pdf" style="min-height: 70px;"></textarea>
                 <small class="form-helper">Separa URLs con comas (videos, PDFs, imágenes, etc.)</small>
               </div>
@@ -1206,7 +1207,7 @@ export function renderCrearCurso() {
           const modalContainer = document.createElement('div');
           modalContainer.className = 'modal-contenedor-crear';
           modalContainer.innerHTML = `
-            <div class="modal-header">✏️ Editar Lección</div>
+            <div class="modal-header">Editar Lección</div>
             <div class="modal-subtitle">Modifica los datos de la lección</div>
             <form class="modal-body">
               <div class="form-group">
@@ -1218,11 +1219,11 @@ export function renderCrearCurso() {
                 <input type="number" class="form-control form-control-compact" id="lec-horas-edit" value="${lec.horas}" min="1" max="100" />
               </div>
               <div class="form-group">
-                <label>Contenido 📚</label>
+                <label>Contenido</label>
                 <textarea class="form-control form-control-compact" id="lec-contenido-edit" style="min-height: 100px;">${lec.contenido || ''}</textarea>
               </div>
               <div class="form-group">
-                <label>Multimedia 🎥</label>
+                <label>Multimedia</label>
                 <textarea class="form-control form-control-compact" id="lec-multimedia-edit" style="min-height: 70px;">${(lec.multimedia || []).join(', ')}</textarea>
                 <small class="form-helper">Separa URLs con comas (videos, PDFs, imágenes, etc.)</small>
               </div>
@@ -1449,8 +1450,8 @@ export function renderCrearCurso() {
                       <div class="leccion-info">
                         <div class="leccion-titulo">${l.titulo}</div>
                         <div class="leccion-horas">${l.horas}h</div>
-                        ${l.contenido ? `<div class="leccion-contenido-preview" style="font-size:0.8rem; color:#666; margin-top:0.3rem;">📄 Con contenido</div>` : ''}
-                        ${(l.multimedia && l.multimedia.length > 0) ? `<div class="leccion-multimedia-preview" style="font-size:0.8rem; color:#00ADB5; margin-top:0.2rem;">🎥 ${l.multimedia.length} recurso(s)</div>` : ''}
+                        ${l.contenido ? `<div class="leccion-contenido-preview" style="font-size:0.8rem; color:#666; margin-top:0.3rem;">Contenido disponible</div>` : ''}
+                        ${(l.multimedia && l.multimedia.length > 0) ? `<div class="leccion-multimedia-preview" style="font-size:0.8rem; color:#00ADB5; margin-top:0.2rem;">${l.multimedia.length} recurso(s)</div>` : ''}
                       </div>
                     </div>
                   `).join('')}

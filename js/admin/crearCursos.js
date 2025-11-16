@@ -1449,34 +1449,205 @@ export function renderCrearCurso() {
     modalOverlay.appendChild(modalContainer);
     document.body.appendChild(modalOverlay);
 
-    // Renderizar módulos y lecciones dentro del modal
+    // Renderizar módulos y lecciones dentro del modal (interactivo)
     const modulosListContainer = modalContainer.querySelector('#edit-modulos-list');
-    if (modulosListContainer) {
-      if (modsCurso.length === 0) {
+
+    function renderModulosInModal() {
+      const mods = storage.modulos.filter(m => m.cursoCodigo === curso.codigo);
+      if (!modulosListContainer) return;
+      if (mods.length === 0) {
         modulosListContainer.innerHTML = '<div class="empty-state">Sin módulos</div>';
-      } else {
-        modulosListContainer.innerHTML = modsCurso.map(mod => {
-          const lecs = storage.lecciones.filter(l => l.moduloCodigo === mod.codigo);
-          return `
-            <div class="modal-modulo-card" style="border-bottom:1px solid #eef6f8; padding:0.5rem 0;">
-              <div style="font-weight:700; display:flex; justify-content:space-between; align-items:center;">
-                <div>${mod.codigo}: ${mod.nombre}</div>
-                <div style="font-size:0.85rem; color:#6b7280;">${lecs.length} lección(es)</div>
+        return;
+      }
+
+      modulosListContainer.innerHTML = mods.map(mod => {
+        const lecs = storage.lecciones.filter(l => l.moduloCodigo === mod.codigo);
+        return `
+          <div class="modal-modulo-card" data-mod="${mod.codigo}" style="border-bottom:1px solid #eef6f8; padding:0.6rem 0;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem;">
+              <div>
+                <div style="font-weight:800; color:#0f3446;">${mod.codigo}: ${mod.nombre}</div>
+                ${mod.descripcion ? `<div style="color:#6b7280; font-size:0.92rem; margin-top:0.25rem;">${mod.descripcion}</div>` : ''}
               </div>
-              ${mod.descripcion ? `<div style="color:#6b7280; font-size:0.9rem; margin-top:0.25rem;">${mod.descripcion}</div>` : ''}
-              <div style="margin-top:0.5rem;">
-                ${lecs.length === 0 ? '<div style="color:#999;">Sin lecciones</div>' : lecs.map(l => `
-                  <div style="display:flex; justify-content:space-between; gap:0.5rem; padding:0.25rem 0; border-radius:6px;">
-                    <div style="font-size:0.95rem; color:#16324f;">${l.titulo}</div>
-                    <div style="color:#00ADB5; font-size:0.85rem;">${l.horas}h</div>
-                  </div>
-                `).join('')}
+              <div style="display:flex; gap:0.4rem; align-items:center;">
+                <div style="font-size:0.85rem; color:#6b7280;">${lecs.length} lección(es)</div>
+                <button class="btn btn-secondary btn-sm" data-mod-edit="${mod.codigo}">Editar</button>
+                <button class="btn btn-danger btn-sm" data-mod-del="${mod.codigo}">Eliminar</button>
               </div>
             </div>
-          `;
-        }).join('');
-      }
+            <div style="margin-top:0.55rem; padding-left:0.25rem;">
+              ${lecs.length === 0 ? '<div style="color:#999;">Sin lecciones</div>' : lecs.map(l => `
+                <div class="modal-lec-item" data-lec="${l.id}" style="display:flex; justify-content:space-between; gap:0.5rem; padding:0.35rem 0; border-radius:6px;">
+                  <div style="font-size:0.95rem; color:#16324f;">${l.titulo}</div>
+                  <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <div style="color:#00ADB5; font-size:0.85rem;">${l.horas}h</div>
+                    <button class="btn btn-secondary btn-sm" data-lec-edit="${mod.codigo}|${l.id}">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-lec-del="${mod.codigo}|${l.id}">Eliminar</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Attach handlers
+      modulosListContainer.querySelectorAll('[data-mod-edit]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const modCode = btn.dataset.modEdit;
+          openEditModuleForm(modCode);
+        });
+      });
+
+      modulosListContainer.querySelectorAll('[data-mod-del]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const modCode = btn.dataset.modDel;
+          if (!confirm('¿Eliminar módulo y todas sus lecciones?')) return;
+          // remove module and its lessons
+          storage.modulos = storage.modulos.filter(m => m.codigo !== modCode);
+          storage.lecciones = storage.lecciones.filter(l => l.moduloCodigo !== modCode);
+          localStorage.setItem('modulos', JSON.stringify(storage.modulos));
+          localStorage.setItem('lecciones', JSON.stringify(storage.lecciones));
+          renderModulosInModal();
+          renderCursosList();
+          mostrarMensaje('Módulo eliminado', 'exito');
+        });
+      });
+
+      modulosListContainer.querySelectorAll('[data-lec-edit]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [modCode, lecId] = btn.dataset.lecEdit.split('|');
+          openEditLessonForm(modCode, lecId);
+        });
+      });
+
+      modulosListContainer.querySelectorAll('[data-lec-del]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [modCode, lecId] = btn.dataset.lecDel.split('|');
+          if (!confirm('¿Eliminar esta lección?')) return;
+          storage.lecciones = storage.lecciones.filter(l => l.id !== lecId);
+          localStorage.setItem('lecciones', JSON.stringify(storage.lecciones));
+          renderModulosInModal();
+          renderCursosList();
+          mostrarMensaje('Lección eliminada', 'exito');
+        });
+      });
     }
+
+    // Open inline edit form for a module
+    function openEditModuleForm(modCode) {
+      const mod = storage.modulos.find(m => m.codigo === modCode);
+      if (!mod) return;
+      const card = modulosListContainer.querySelector(`[data-mod="${modCode}"]`);
+      if (!card) return;
+      card.dataset.editing = '1';
+      const lecs = storage.lecciones.filter(l => l.moduloCodigo === mod.codigo);
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem;">
+          <div style="flex:1;">
+            <div style="font-weight:800; color:#0f3446; margin-bottom:0.5rem;">Editar módulo</div>
+            <div style="display:flex; gap:0.5rem;">
+              <input class="form-control form-control-compact" id="edit-mod-codigo" value="${mod.codigo}" style="width:110px;" />
+              <input class="form-control form-control-compact" id="edit-mod-nombre" value="${mod.nombre}" placeholder="Nombre del módulo" />
+            </div>
+            <textarea class="form-control form-control-compact" id="edit-mod-desc" style="margin-top:0.5rem; min-height:70px;">${mod.descripcion || ''}</textarea>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.5rem; margin-left:0.5rem;">
+            <button class="btn btn-primary btn-sm" id="save-mod">Guardar</button>
+            <button class="btn btn-secondary btn-sm" id="cancel-mod">Cancelar</button>
+          </div>
+        </div>
+        <div style="margin-top:0.6rem; font-size:0.9rem; color:#6b7280;">${lecs.length} lección(es) en este módulo</div>
+      `;
+
+      const inputCodigoMod = card.querySelector('#edit-mod-codigo');
+      const inputNombreMod = card.querySelector('#edit-mod-nombre');
+      const inputDescMod = card.querySelector('#edit-mod-desc');
+      const btnSaveMod = card.querySelector('#save-mod');
+      const btnCancelMod = card.querySelector('#cancel-mod');
+
+      btnCancelMod.addEventListener('click', () => {
+        renderModulosInModal();
+      });
+
+      btnSaveMod.addEventListener('click', () => {
+        const newCode = inputCodigoMod.value.trim();
+        const newName = inputNombreMod.value.trim();
+        const newDesc = inputDescMod.value.trim();
+        if (!newCode || !newName) { alert('Código y nombre son requeridos'); return; }
+        // if code changed, ensure uniqueness
+        if (newCode !== mod.codigo && storage.modulos.some(m => m.codigo === newCode)) { alert('Ya existe un módulo con ese código'); return; }
+
+        // Update module
+        const modIdx = storage.modulos.findIndex(m => m.codigo === mod.codigo);
+        if (modIdx !== -1) {
+          // If code changed, update lessons' moduloCodigo
+          if (newCode !== mod.codigo) {
+            storage.lecciones.forEach(l => { if (l.moduloCodigo === mod.codigo) l.moduloCodigo = newCode; });
+          }
+          storage.modulos[modIdx] = { codigo: newCode, nombre: newName, descripcion: newDesc, cursoCodigo: storage.modulos[modIdx].cursoCodigo };
+          localStorage.setItem('modulos', JSON.stringify(storage.modulos));
+          localStorage.setItem('lecciones', JSON.stringify(storage.lecciones));
+          renderModulosInModal();
+          renderCursosList();
+          mostrarMensaje('Módulo actualizado', 'exito');
+        }
+      });
+    }
+
+    // Open inline edit form for a lesson
+    function openEditLessonForm(modCode, lecId) {
+      const card = modulosListContainer.querySelector(`[data-mod="${modCode}"]`);
+      if (!card) return;
+      const lec = storage.lecciones.find(l => l.id === lecId);
+      if (!lec) return;
+
+      // replace the lesson item with an inline form
+      const lecItem = card.querySelector(`[data-lec="${lecId}"]`);
+      if (!lecItem) return;
+      lecItem.innerHTML = `
+        <div style="flex:1;">
+          <input class="form-control form-control-compact" id="edit-lec-titulo" value="${lec.titulo}" placeholder="Título" />
+          <div style="display:flex; gap:0.5rem; margin-top:0.4rem; align-items:center;">
+            <input type="number" class="form-control form-control-compact" id="edit-lec-horas" value="${lec.horas}" style="width:90px;" />
+            <input class="form-control form-control-compact" id="edit-lec-multimedia" value="${(lec.multimedia || []).join(', ')}" placeholder="URLs separadas por comas" />
+          </div>
+          <textarea class="form-control form-control-compact" id="edit-lec-contenido" style="margin-top:0.4rem; min-height:70px;">${lec.contenido || ''}</textarea>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.4rem; margin-left:0.5rem;">
+          <button class="btn btn-primary btn-sm" id="save-lec">Guardar</button>
+          <button class="btn btn-secondary btn-sm" id="cancel-lec">Cancelar</button>
+        </div>
+      `;
+
+      const inputTitulo = lecItem.querySelector('#edit-lec-titulo');
+      const inputHoras = lecItem.querySelector('#edit-lec-horas');
+      const inputMultimedia = lecItem.querySelector('#edit-lec-multimedia');
+      const inputContenido = lecItem.querySelector('#edit-lec-contenido');
+      const btnSave = lecItem.querySelector('#save-lec');
+      const btnCancel = lecItem.querySelector('#cancel-lec');
+
+      btnCancel.addEventListener('click', () => { renderModulosInModal(); });
+
+      btnSave.addEventListener('click', () => {
+        const titulo = inputTitulo.value.trim();
+        const horas = parseInt(inputHoras.value);
+        const multimedia = inputMultimedia.value.trim() ? inputMultimedia.value.split(',').map(u => u.trim()).filter(Boolean) : [];
+        const contenido = inputContenido.value.trim();
+        if (!titulo || !horas || horas <= 0) { alert('Título y horas válidas son requeridas'); return; }
+        const lecIdx = storage.lecciones.findIndex(l => l.id === lecId);
+        if (lecIdx !== -1) {
+          storage.lecciones[lecIdx] = { ...storage.lecciones[lecIdx], titulo, horas, contenido, multimedia };
+          localStorage.setItem('lecciones', JSON.stringify(storage.lecciones));
+          renderModulosInModal();
+          renderCursosList();
+          mostrarMensaje('Lección actualizada', 'exito');
+        }
+      });
+    }
+
+    // initial render
+    renderModulosInModal();
 
     // Cargar docentes
     const selectDocente = modalContainer.querySelector('#edit-docente');

@@ -667,7 +667,7 @@ export function renderCrearCurso() {
     </div>
 
     <div class="search-container">
-      <input type="text" class="search-input" id="curso-search" placeholder="Buscar por código de curso..." />
+      <input type="text" class="search-input" id="curso-search" placeholder="Buscar por nombre o código de curso..." />
     </div>
 
     <div id="mensaje" class="mensaje"></div>
@@ -1741,7 +1741,10 @@ export function renderCrearCurso() {
 
     let cursosFiltered = storage.cursos;
     if (filtroSearch) {
-      cursosFiltered = cursosFiltered.filter(c => c.codigo.toLowerCase().includes(filtroSearch));
+      cursosFiltered = cursosFiltered.filter(c => (
+        (c.codigo && c.codigo.toLowerCase().includes(filtroSearch)) ||
+        (c.nombre && c.nombre.toLowerCase().includes(filtroSearch))
+      ));
     }
 
     if (cursosFiltered.length === 0) {

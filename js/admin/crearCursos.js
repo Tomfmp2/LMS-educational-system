@@ -946,8 +946,13 @@ export function renderCrearCurso() {
                     <div class="leccion-info">
                       <div class="leccion-titulo">${l.titulo}</div>
                       <div class="leccion-horas">${l.horas}h</div>
+                      ${l.contenido ? `<div class="leccion-contenido-preview" style="font-size:0.8rem; color:#666; margin-top:0.3rem;">📄 Con contenido</div>` : ''}
+                      ${(l.multimedia && l.multimedia.length > 0) ? `<div class="leccion-multimedia-preview" style="font-size:0.8rem; color:#00ADB5; margin-top:0.2rem;">🎥 ${l.multimedia.length} recurso(s)</div>` : ''}
                     </div>
-                    <button type="button" class="btn btn-danger btn-sm" data-del-lec="${idx}-${lidx}">Eliminar</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <button type="button" class="btn btn-secondary btn-sm" data-edit-lec="${idx}-${lidx}">Editar</button>
+                      <button type="button" class="btn btn-danger btn-sm" data-del-lec="${idx}-${lidx}">Eliminar</button>
+                    </div>
                   </div>
                 `).join('')
               }
@@ -1061,8 +1066,17 @@ export function renderCrearCurso() {
                 <input type="text" class="form-control" id="lec-titulo" placeholder="Ej: Variables y Tipos de Datos" autofocus />
               </div>
               <div class="form-group">
-                <label><span class="required">*</span> Horas de duración</label>
-                <input type="number" class="form-control" id="lec-horas" placeholder="2" min="1" max="10" />
+                <label><span class="required">*</span> Intensidad horaria (horas)</label>
+                <input type="number" class="form-control" id="lec-horas" placeholder="2" min="1" max="100" />
+              </div>
+              <div class="form-group">
+                <label>Contenido (material de estudio)</label>
+                <textarea class="form-control" id="lec-contenido" placeholder="Describe el material y conceptos clave de esta lección..." style="min-height: 120px;"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Recursos multimedia (URLs separadas por coma)</label>
+                <textarea class="form-control" id="lec-multimedia" placeholder="Ej: https://video.com/video1.mp4, https://pdf.com/libro.pdf" style="min-height: 80px;"></textarea>
+                <small style="color: #666; margin-top: 0.3rem;">Puedes agregar enlaces a videos, PDFs, imágenes, etc.</small>
               </div>
             </form>
             <div class="modal-footer">
@@ -1076,6 +1090,8 @@ export function renderCrearCurso() {
 
           const inputTitulo = modalContainer.querySelector('#lec-titulo');
           const inputHoras = modalContainer.querySelector('#lec-horas');
+          const inputContenido = modalContainer.querySelector('#lec-contenido');
+          const inputMultimedia = modalContainer.querySelector('#lec-multimedia');
           const btnCancelarLec = modalContainer.querySelector('#modal-cancelar-lec');
           const btnGuardarLec = modalContainer.querySelector('#modal-guardar-lec');
 
@@ -1094,18 +1110,25 @@ export function renderCrearCurso() {
           btnGuardarLec.addEventListener('click', () => {
             const titulo = inputTitulo.value.trim();
             const horas = parseInt(inputHoras.value);
+            const contenido = inputContenido.value.trim();
+            const multimediaStr = inputMultimedia.value.trim();
 
             if (!titulo || !horas || horas <= 0) {
-              alert('Completa título y horas válidas (1-10)');
+              alert('Completa título y horas válidas');
               inputTitulo.focus();
               return;
             }
 
+            // Procesar multimedia - separar por comas y limpiar espacios
+            const multimedia = multimediaStr
+              ? multimediaStr.split(',').map(url => url.trim()).filter(url => url.length > 0)
+              : [];
+
             cursoTemp.modulos[idx].lecciones.push({ 
               titulo, 
               horas, 
-              contenido: '', 
-              multimedia: [] 
+              contenido,
+              multimedia
             });
             
             renderModulos();
@@ -1139,8 +1162,17 @@ export function renderCrearCurso() {
                 <input type="text" class="form-control" id="lec-titulo-edit" value="${lec.titulo}" autofocus />
               </div>
               <div class="form-group">
-                <label><span class="required">*</span> Horas</label>
+                <label><span class="required">*</span> Intensidad horaria (horas)</label>
                 <input type="number" class="form-control" id="lec-horas-edit" value="${lec.horas}" min="1" max="100" />
+              </div>
+              <div class="form-group">
+                <label>Contenido (material de estudio)</label>
+                <textarea class="form-control" id="lec-contenido-edit" style="min-height: 120px;">${lec.contenido || ''}</textarea>
+              </div>
+              <div class="form-group">
+                <label>Recursos multimedia (URLs separadas por coma)</label>
+                <textarea class="form-control" id="lec-multimedia-edit" style="min-height: 80px;">${(lec.multimedia || []).join(', ')}</textarea>
+                <small style="color: #666; margin-top: 0.3rem;">Puedes agregar enlaces a videos, PDFs, imágenes, etc.</small>
               </div>
             </form>
             <div class="modal-footer">
@@ -1154,6 +1186,8 @@ export function renderCrearCurso() {
 
           const inputTitulo = modalContainer.querySelector('#lec-titulo-edit');
           const inputHoras = modalContainer.querySelector('#lec-horas-edit');
+          const inputContenido = modalContainer.querySelector('#lec-contenido-edit');
+          const inputMultimedia = modalContainer.querySelector('#lec-multimedia-edit');
           const btnCancelar = modalContainer.querySelector('#modal-cancelar-lec-edit');
           const btnGuardar = modalContainer.querySelector('#modal-guardar-lec-edit');
 
@@ -1164,9 +1198,23 @@ export function renderCrearCurso() {
           btnGuardar.addEventListener('click', () => {
             const titulo = inputTitulo.value.trim();
             const horas = parseInt(inputHoras.value, 10);
-            if (!titulo || !horas || horas <= 0) { alert('Título y horas válidas (1+)'); inputTitulo.focus(); return; }
+            const contenido = inputContenido.value.trim();
+            const multimediaStr = inputMultimedia.value.trim();
+
+            if (!titulo || !horas || horas <= 0) { 
+              alert('Completa título y horas válidas'); 
+              inputTitulo.focus(); 
+              return; 
+            }
+
+            const multimedia = multimediaStr
+              ? multimediaStr.split(',').map(url => url.trim()).filter(url => url.length > 0)
+              : [];
+
             cursoTemp.modulos[idx].lecciones[lidx].titulo = titulo;
             cursoTemp.modulos[idx].lecciones[lidx].horas = horas;
+            cursoTemp.modulos[idx].lecciones[lidx].contenido = contenido;
+            cursoTemp.modulos[idx].lecciones[lidx].multimedia = multimedia;
             renderModulos();
             cerrarModal();
             mostrarMensaje('Lección actualizada', 'exito');
@@ -1349,6 +1397,8 @@ export function renderCrearCurso() {
                       <div class="leccion-info">
                         <div class="leccion-titulo">${l.titulo}</div>
                         <div class="leccion-horas">${l.horas}h</div>
+                        ${l.contenido ? `<div class="leccion-contenido-preview" style="font-size:0.8rem; color:#666; margin-top:0.3rem;">📄 Con contenido</div>` : ''}
+                        ${(l.multimedia && l.multimedia.length > 0) ? `<div class="leccion-multimedia-preview" style="font-size:0.8rem; color:#00ADB5; margin-top:0.2rem;">🎥 ${l.multimedia.length} recurso(s)</div>` : ''}
                       </div>
                     </div>
                   `).join('')}

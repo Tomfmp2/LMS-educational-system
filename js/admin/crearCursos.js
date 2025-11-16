@@ -1400,6 +1400,136 @@ export function renderCrearCurso() {
     });
   }
 
+  // === MODAL FLOTANTE EDICIÓN RÁPIDA DE CURSO ===
+  function abrirModalEditarCurso(curso) {
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay-crear';
+    
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'modal-contenedor-crear';
+    
+    const modsCurso = storage.modulos.filter(m => m.cursoCodigo === curso.codigo);
+    const totalLecciones = modsCurso.reduce((sum, m) => sum + storage.lecciones.filter(l => l.moduloCodigo === m.codigo).length, 0);
+    
+    modalContainer.innerHTML = `
+      <div class="modal-header">Editar Curso</div>
+      <div class="modal-subtitle">${curso.codigo} • ${modsCurso.length} módulos • ${totalLecciones} lecciones</div>
+      <form class="modal-body">
+        <div class="form-group">
+          <label><span class="required">*</span> Nombre</label>
+          <input type="text" class="form-control form-control-compact" id="edit-nombre" value="${curso.nombre}" placeholder="Nombre del curso" />
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea class="form-control form-control-compact" id="edit-descripcion" placeholder="Descripción del curso..." style="min-height: 100px;">${curso.descripcion || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Docente</label>
+          <select class="form-control form-control-compact" id="edit-docente">
+            <option value="">Seleccione docente...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Imagen (URL)</label>
+          <input type="text" class="form-control form-control-compact" id="edit-imagen" value="${curso.imagen || ''}" placeholder="https://..." />
+          <img id="edit-preview" class="image-preview" ${curso.imagen ? `src="${curso.imagen}" style="display:block; width:100%; max-width:300px; margin-top:1rem; border-radius:10px;"` : 'style="display:none;"'} />
+        </div>
+      </form>
+      <div class="modal-footer modal-footer-compact">
+        <button type="button" class="btn btn-secondary btn-compact" id="modal-cancelar-edit">Cancelar</button>
+        <button type="button" class="btn btn-primary btn-compact" id="modal-guardar-full-edit">Guardar Cambios</button>
+      </div>
+    `;
+
+    modalOverlay.appendChild(modalContainer);
+    document.body.appendChild(modalOverlay);
+
+    // Cargar docentes
+    const selectDocente = modalContainer.querySelector('#edit-docente');
+    const docentesOcupados = storage.cursos
+      .filter(c => c.codigo !== curso.codigo)
+      .map(c => c.docente);
+    const disponibles = storage.profesores.filter(p => !docentesOcupados.includes(p.correo));
+    
+    disponibles.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.correo;
+      opt.textContent = p.nombre;
+      if (p.correo === curso.docente) opt.selected = true;
+      selectDocente.appendChild(opt);
+    });
+
+    const inputNombre = modalContainer.querySelector('#edit-nombre');
+    const inputDesc = modalContainer.querySelector('#edit-descripcion');
+    const inputImagen = modalContainer.querySelector('#edit-imagen');
+    const previewImagen = modalContainer.querySelector('#edit-preview');
+    const btnCancelar = modalContainer.querySelector('#modal-cancelar-edit');
+    const btnGuardar = modalContainer.querySelector('#modal-guardar-full-edit');
+
+    // Preview de imagen
+    inputImagen.addEventListener('input', () => {
+      const val = inputImagen.value.trim();
+      if (isValidImageUrl(val)) {
+        previewImagen.src = val;
+        previewImagen.style.display = 'block';
+      } else {
+        previewImagen.style.display = 'none';
+      }
+    });
+
+    function cerrarModal() {
+      modalOverlay.remove();
+    }
+
+    btnCancelar.addEventListener('click', cerrarModal);
+    modalOverlay.addEventListener('click', (ev) => {
+      if (ev.target === modalOverlay) cerrarModal();
+    });
+
+    btnGuardar.addEventListener('click', () => {
+      const nombre = inputNombre.value.trim();
+      const descripcion = inputDesc.value.trim();
+      const imagen = inputImagen.value.trim();
+      const docente = selectDocente.value;
+
+      if (!nombre) {
+        alert('El nombre del curso es requerido');
+        inputNombre.focus();
+        return;
+      }
+
+      // Validar que la imagen sea URL válida
+      if (imagen && !isValidImageUrl(imagen)) {
+        alert('La URL de la imagen no es válida');
+        inputImagen.focus();
+        return;
+      }
+
+      // Validar que el docente no esté asignado a otro curso
+      if (docente && docente !== curso.docente && storage.cursos.some(c => c.docente === docente && c.codigo !== curso.codigo)) {
+        alert('Este docente ya tiene un curso asignado');
+        selectDocente.focus();
+        return;
+      }
+
+      // Actualizar curso
+      const idx = storage.cursos.findIndex(c => c.codigo === curso.codigo);
+      if (idx !== -1) {
+        storage.cursos[idx] = {
+          ...storage.cursos[idx],
+          nombre,
+          descripcion,
+          imagen: imagen || storage.cursos[idx].imagen,
+          docente: docente || storage.cursos[idx].docente
+        };
+        localStorage.setItem('cursos', JSON.stringify(storage.cursos));
+        mostrarMensaje(`Curso "${nombre}" actualizado`, 'exito');
+        renderCursosList();
+        cerrarModal();
+      }
+    });
+  }
+
   // === RENDERIZAR CURSOS COMPLETADOS ===
   function renderCursosList() {
     cursosList.innerHTML = '';
@@ -1491,14 +1621,7 @@ export function renderCrearCurso() {
 
       // Editar curso
       div.querySelector(`[data-edit-curso="${curso.codigo}"]`).addEventListener('click', () => {
-        cursoEnEdicion = {
-          ...curso,
-          modulos: modsCurso.map(m => ({
-            ...m,
-            lecciones: storage.lecciones.filter(l => l.moduloCodigo === m.codigo)
-          }))
-        };
-        renderCrearCursoForm();
+        abrirModalEditarCurso(curso);
       });
     });
   }

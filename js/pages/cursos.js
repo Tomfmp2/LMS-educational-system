@@ -379,6 +379,9 @@ export function renderCursos() {
         <h1>Todos los Cursos Disponibles</h1>
         <p class="cursos-subtitle">Explora nuestro catálogo de cursos y amplía tus conocimientos</p>
       </div>
+      <div style="display:flex; justify-content:center; margin-top:1rem;">
+        <input id="curso-public-search" placeholder="Buscar cursos por nombre o código..." style="width:100%; max-width:560px; padding:0.8rem 1rem; border:1px solid #e6eef0; border-radius:12px; font-size:1rem;" />
+      </div>
       <div id="contenedor-cursos"></div>
       <p id="mensaje-vacio" style="display:none;">Aún no hay cursos disponibles con contenido completo. ¡Vuelve pronto!</p>
     </main>
@@ -506,6 +509,28 @@ export function renderCursos() {
 
   const contenedor = container.querySelector('#contenedor-cursos');
   const mensajeVacio = container.querySelector('#mensaje-vacio');
+  const publicSearchInput = container.querySelector('#curso-public-search');
+
+  // Filtrar visualmente los cursos ya renderizados (evita re-render completo)
+  function applyPublicFilter(query) {
+    const q = (query || '').toLowerCase().trim();
+    const cards = contenedor.querySelectorAll('.curso-card');
+    cards.forEach(card => {
+      const codigo = (card.dataset.codigo || '').toLowerCase();
+      const nombre = (card.querySelector('h3')?.textContent || '').toLowerCase();
+      const match = !q || codigo.includes(q) || nombre.includes(q);
+      card.style.display = match ? '' : 'none';
+    });
+    // If no visible cards, show empty message
+    const anyVisible = Array.from(contenedor.children).some(c => c.style.display !== 'none');
+    mensajeVacio.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  if (publicSearchInput) {
+    publicSearchInput.addEventListener('input', (e) => {
+      applyPublicFilter(e.target.value);
+    });
+  }
 
   if (cursosCompletos.length === 0) {
     mensajeVacio.style.display = 'block';

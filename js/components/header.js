@@ -187,6 +187,7 @@ export class header extends HTMLElement {
               ${this.sesion.isAdmin ? `
                 <div class="menu-item" id="btn-crear-curso">Crear Cursos</div>
                 <div class="menu-item" id="btn-gestion-profesores">Gestionar Profesores</div>
+                <div class="menu-item" id="btn-gestion-administrativos">Gestionar Administrativos</div>
               ` : `
                 <div class="menu-item" id="btn-mis-cursos">Mis Cursos</div>
                 <div class="menu-item" id="btn-favoritos">Favoritos</div>
@@ -333,6 +334,25 @@ export class header extends HTMLElement {
           }
         } catch (error) {
           notificacionError('Error al cargar gestión de profesores. Recarga la página.');
+        } finally {
+          menuUsuario.classList.remove('visible');
+        }
+      });
+    }
+
+    const btnGestionAdministrativos = this.shadowRoot.querySelector('#btn-gestion-administrativos');
+    if (btnGestionAdministrativos) {
+      btnGestionAdministrativos.addEventListener('click', async () => {
+        try {
+          const { renderGestionAdministrativos } = await import('../admin/gestionAdministrativos.js');
+          const section = document.getElementById('section-home');
+          if (section) {
+            section.innerHTML = '';
+            section.appendChild(renderGestionAdministrativos());
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch (error) {
+          notificacionError('Error al cargar gestión de administradores. Recarga la página.');
         } finally {
           menuUsuario.classList.remove('visible');
         }

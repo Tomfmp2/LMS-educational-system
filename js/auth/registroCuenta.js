@@ -5,7 +5,6 @@ class RegistroCuenta extends HTMLElement {
   }
 
   async connectedCallback() {
-    console.log('Renderizando vista del crear cuenta...');
     // Importar notificaciones
     const { notificacionExito, notificacionError, notificacionAdvertencia } = await import('../utils/notificaciones.js');
     this.notificacionExito = notificacionExito;
@@ -67,7 +66,7 @@ class RegistroCuenta extends HTMLElement {
       try {
         usuarios = JSON.parse(usuariosJSON || '{}');
       } catch (e) {
-        console.error('Error al parsear datos existentes:', e);
+        this.notificacionError('Error al procesar datos de usuarios');
       }
       
       // Verificar si el correo ya está registrado
@@ -107,7 +106,7 @@ class RegistroCuenta extends HTMLElement {
         return false;
       }
     } catch (e) {
-      console.error('Error al verificar correo existente:', e);
+      // Error al verificar, pero continuamos
     }
     
     if (data.contrasena !== data.confirmPassword) {

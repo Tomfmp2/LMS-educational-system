@@ -1,15 +1,17 @@
 // js/app.js
-import './views/header.js';
-import './views/footer.js';
-import './views/registroCuenta.js';
-import { renderLoginView } from './views/viewLogin.js';
-import { initializeLoginLogic } from './logic/logicLogin.js';
-import { renderCursos } from './modules/cursos.js';
-import { renderDetalleCurso } from './modules/detalleCurso.js';
+import './components/header.js';
+import './components/footer.js';
+import './auth/registroCuenta.js';
+import { renderLoginView } from './auth/viewLogin.js';
+import { initializeLoginLogic } from './auth/logicLogin.js';
+import { renderCursos } from './pages/cursos.js';
+import { renderDetalleCurso } from './pages/detalleCurso.js';
+import { renderCrearCurso } from './admin/crearCursos.js';
+import { renderGestionProfesores } from './admin/gestionProfesores.js';
+import { renderMisCursos } from './pages/misCursos.js';
+import { renderFavoritos } from './pages/favoritos.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('App iniciada');
-
   // Crear admin por defecto
   const usuarios = JSON.parse(localStorage.getItem('usuarios') || '{}');
   if (!usuarios['admin12345@gmail.com']) {
@@ -30,12 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Renderizar cursos destacados en el Home
   renderHomeFeatured();
 
-  // Escuchar registro
-  document.addEventListener('open-registro', () => {
-    const registro = document.createElement('registro-cuenta');
-    document.body.appendChild(registro);
-  });
-
   // Botón "Cursos" del home
   const btnCursosHome = document.querySelector('#section-home input[type="button"]');
   if (btnCursosHome) {
@@ -45,8 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
       appContainer.appendChild(renderCursos());
     });
   }
+});
 
-  console.log('App lista');
+document.addEventListener('open-registro', () => {
+  const registro = document.createElement('registro-cuenta');
+  document.body.appendChild(registro);
 });
 
 function seedDataIfEmpty() {
@@ -154,43 +153,10 @@ function seedDataIfEmpty() {
   localStorage.setItem('modulos', JSON.stringify(modulos));
   localStorage.setItem('lecciones', JSON.stringify(lecciones));
 
+  // Los cursos, módulos y lecciones se crean manualmente desde la sección de "Crear Cursos"
+  // No se crean por defecto para permitir que el admin asigne profesores libremente
+
   if (cursos.length === 0 && modulos.length === 0 && lecciones.length === 0) {
-    const seededCursos = [
-      { codigo: 'JS101', nombre: 'Curso de JavaScript', descripcion: 'Aprende JavaScript desde cero. Domina la programación web moderna, ES6+, y desarrollo de aplicaciones interactivas con la tecnología más utilizada en el frontend.', docente: 'juan.martinez@lms.edu', imagen: 'https://images.pexels.com/photos/4195325/pexels-photo-4195325.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop' },
-      { codigo: 'PY101', nombre: 'Curso de Python', descripcion: 'Curso completo de Python para principiantes y avanzados. Desde conceptos básicos hasta programación orientada a objetos, web scraping y ciencia de datos.', docente: 'sofia.garcia@lms.edu', imagen: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop' },
-      { codigo: 'REACT101', nombre: 'Curso de React y Frontend', descripcion: 'Domina React.js, el framework más popular para desarrollo frontend. Aprende componentes, hooks, state management y construcción de aplicaciones modernas.', docente: 'roberto.lopez@lms.edu', imagen: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop' },
-      { codigo: 'DB101', nombre: 'Curso de Bases de Datos y Backend', descripcion: 'Diseña y gestiona bases de datos relacionales. Desarrolla APIs REST robustas con Node.js, manejo de transacciones y arquitectura de aplicaciones.', docente: 'maria.rodriguez@lms.edu', imagen: 'https://images.pexels.com/photos/5632400/pexels-photo-5632400.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop' },
-      { codigo: 'DEVOPS101', nombre: 'Curso de DevOps y Cloud', descripcion: 'Aprende a desplegar, monitorear y mantener aplicaciones en producción. Docker, Kubernetes, AWS y CI/CD para desarrollo profesional.', docente: 'carlos.fernandez@lms.edu', imagen: 'https://images.pexels.com/photos/7974/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop' }
-    ];
-
-    const seededModulos = [
-      // JS101
-      { codigo: 'MJS1', nombre: 'Fundamentos de JavaScript', descripcion: 'Variables, tipos de datos y operadores básicos', cursoCodigo: 'JS101' },
-      { codigo: 'MJS2', nombre: 'Control de Flujo', descripcion: 'Condicionales y bucles', cursoCodigo: 'JS101' },
-      { codigo: 'MJS3', nombre: 'Funciones y Scope', descripcion: 'Funciones, arrow functions y contexto this', cursoCodigo: 'JS101' },
-      { codigo: 'MJS4', nombre: 'DOM y Eventos', descripcion: 'Manipulación del DOM y manejo de eventos', cursoCodigo: 'JS101' },
-      // PY101
-      { codigo: 'MPY1', nombre: 'Introducción a Python', descripcion: 'Configuración, sintaxis básica y estructuras de datos', cursoCodigo: 'PY101' },
-      { codigo: 'MPY2', nombre: 'Programación Orientada a Objetos', descripcion: 'Clases, herencia y polimorfismo', cursoCodigo: 'PY101' },
-      { codigo: 'MPY3', nombre: 'Manejo de Archivos y Excepciones', descripcion: 'I/O de archivos y manejo de errores', cursoCodigo: 'PY101' },
-      { codigo: 'MPY4', nombre: 'Librerías Populares', descripcion: 'NumPy, Pandas y Matplotlib', cursoCodigo: 'PY101' },
-      // REACT101
-      { codigo: 'MRE1', nombre: 'Conceptos Básicos de React', descripcion: 'Componentes, JSX y props', cursoCodigo: 'REACT101' },
-      { codigo: 'MRE2', nombre: 'Hooks y Estado', descripcion: 'useState, useEffect y custom hooks', cursoCodigo: 'REACT101' },
-      { codigo: 'MRE3', nombre: 'Routing y Navegación', descripcion: 'React Router y navegación entre páginas', cursoCodigo: 'REACT101' },
-      { codigo: 'MRE4', nombre: 'Estado Global', descripcion: 'Context API y Redux', cursoCodigo: 'REACT101' },
-      // DB101
-      { codigo: 'MDB1', nombre: 'SQL Básico', descripcion: 'SELECT, INSERT, UPDATE, DELETE y JOINs', cursoCodigo: 'DB101' },
-      { codigo: 'MDB2', nombre: 'Diseño de Bases de Datos', descripcion: 'Normalización y diagrama entidad-relación', cursoCodigo: 'DB101' },
-      { codigo: 'MDB3', nombre: 'APIs REST', descripcion: 'Crear endpoints y manejar solicitudes HTTP', cursoCodigo: 'DB101' },
-      { codigo: 'MDB4', nombre: 'Seguridad y Optimización', descripcion: 'Consultas optimizadas y protección de datos', cursoCodigo: 'DB101' },
-      // DEVOPS101
-      { codigo: 'MDV1', nombre: 'Introducción a Docker', descripcion: 'Contenedores, imágenes y docker-compose', cursoCodigo: 'DEVOPS101' },
-      { codigo: 'MDV2', nombre: 'Orquestación con Kubernetes', descripcion: 'Pods, servicios y deployments', cursoCodigo: 'DEVOPS101' },
-      { codigo: 'MDV3', nombre: 'Integración Continua', descripcion: 'GitHub Actions, GitLab CI y Jenkins', cursoCodigo: 'DEVOPS101' },
-      { codigo: 'MDV4', nombre: 'Despliegue en Cloud', descripcion: 'AWS, Google Cloud y Azure', cursoCodigo: 'DEVOPS101' }
-    ];
-
     const seededLecciones = [
       // JS101
       { id: 'L1', titulo: 'Variables y Tipos de Datos', horas: 2, contenido: 'Aprende sobre var, let, const y los tipos primitivos de JavaScript', multimedia: [], moduloCodigo: 'MJS1' },
@@ -259,9 +225,8 @@ function seedDataIfEmpty() {
       { id: 'L60', titulo: 'Monitoreo y Escalado', horas: 2, contenido: 'CloudWatch y auto-scaling', multimedia: [], moduloCodigo: 'MDV4' }
     ];
 
-    localStorage.setItem('cursos', JSON.stringify(seededCursos));
-    localStorage.setItem('modulos', JSON.stringify(seededModulos));
-    localStorage.setItem('lecciones', JSON.stringify(seededLecciones));
+    // Los datos seeded no se guardan automáticamente
+    // El admin debe crear cursos, módulos y lecciones manualmente desde la sección de "Crear Cursos"
   }
 }
 

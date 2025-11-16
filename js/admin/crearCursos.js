@@ -1,5 +1,6 @@
-// js/modules/crearCursos.js
-// Flujo simplificado: Curso + Módulos + Lecciones en una sola pantalla
+// js/admin/crearCursos.js
+// Gestión de cursos, módulos y lecciones
+import { validadores } from '../utils/validadores.js';
 
 export function renderCrearCurso() {
   const container = document.createElement('section');
@@ -637,24 +638,15 @@ export function renderCrearCurso() {
   const searchInput = container.querySelector('#curso-search');
 
   // === HELPERS ===
-  function isValidCode(code) {
-    return /^[A-Za-z0-9_-]{2,}$/.test(code);
-  }
-
-  function isValidImageUrl(u) {
-    if (!u) return false;
-    try {
-      new URL(u);
-      return /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(u) || u.includes('img') || u.includes('image');
-    } catch {
-      return false;
-    }
-  }
+  // Validaciones simplificadas (usar validadores.js)
+  const isValidCode = validadores.isValidCode;
+  const isValidImageUrl = validadores.isValidImageUrl;
 
   function mostrarMensaje(texto, tipo = 'exito') {
+    const MENSAJE_DURATION = 4000;
     mensaje.textContent = texto;
     mensaje.className = `mensaje ${tipo}`;
-    setTimeout(() => mensaje.className = 'mensaje', 4000);
+    setTimeout(() => mensaje.className = 'mensaje', MENSAJE_DURATION);
   }
 
   // Buscar cursos

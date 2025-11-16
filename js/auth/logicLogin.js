@@ -2,8 +2,6 @@
 import { notificacionExito, notificacionError, notificacionAdvertencia } from '../utils/notificaciones.js';
 
 export function initializeLoginLogic() {
-  console.log('Inicializando lógica de login...');
-  
   // Elementos DOM
   const fondoLogin = document.getElementById('fondo-login');
   const btnCerrar = document.getElementById('closeBtn');
@@ -17,40 +15,28 @@ export function initializeLoginLogic() {
     console.error('No se encontró #fondo-login');
     return;
   }
-  
-  console.log('Elementos del modal encontrados:', {
-    fondoLogin: !!fondoLogin,
-    btnCerrar: !!btnCerrar,
-    btnIniciarSesion: !!btnIniciarSesion,
-    btnRegistrar: !!btnRegistrar
-  });
 
   // Función para mostrar el login
   function mostrarLogin() {
-    console.log('Mostrando modal de login');
     fondoLogin.style.display = 'flex';
   }
 
   // Función para ocultar el login
   function ocultarLogin() {
-    console.log('Ocultando modal de login');
     fondoLogin.style.display = 'none';
   }
 
-  // IMPORTANTE: Escuchar el evento custom 'open-login' desde el header
-  document.addEventListener('open-login', (e) => {
-    console.log('Evento open-login recibido:', e);
+  // Escuchar el evento custom 'open-login' desde el header
+  document.addEventListener('open-login', () => {
     mostrarLogin();
   });
 
   // Escuchar clicks en el documento para capturar btnLogin
-  // (esto cubre clicks desde shadow DOM gracias a composed path)
   document.addEventListener('click', (e) => {
     const path = e.composedPath ? e.composedPath() : (e.path || []);
     const clickedBtn = path.some(el => el && el.id === 'btnLogin');
     
     if (clickedBtn) {
-      console.log('Click detectado en btnLogin via composed path');
       mostrarLogin();
     }
   });
@@ -58,7 +44,6 @@ export function initializeLoginLogic() {
   // Cerrar modal con botón cerrar
   if (btnCerrar) {
     btnCerrar.addEventListener('click', () => {
-      console.log('Cerrando modal con botón X');
       ocultarLogin();
     });
   }
@@ -66,7 +51,6 @@ export function initializeLoginLogic() {
   // Cerrar modal si se hace click fuera del section
   fondoLogin.addEventListener('click', function(e) {
     if (e.target === fondoLogin) {
-      console.log('Cerrando modal con click fuera');
       ocultarLogin();
     }
   });
@@ -122,7 +106,6 @@ export function initializeLoginLogic() {
       return true;
 
     } catch (error) {
-      console.error('Error durante el login:', error);
       notificacionError('Ocurrió un error al intentar iniciar sesión');
       return false;
     }
@@ -146,25 +129,12 @@ export function initializeLoginLogic() {
   // Funcionalidad del botón Registrar
   if (btnRegistrar) {
     btnRegistrar.addEventListener('click', () => {
-      console.log('Botón registrar clickeado');
-      // Ocultar login y mostrar registro
       ocultarLogin();
-      
-      // Crear y mostrar el componente de registro
       const registroComponent = document.createElement('registro-cuenta');
       document.body.appendChild(registroComponent);
     });
   }
 
-  // Exportar funciones al window para debugging
-  window.__appLogin = {
-    mostrarLogin,
-    ocultarLogin
-  };
-
-  console.log('Logica de login inicializada correctamente');
-
-  // Retornar handle para cleanup si es necesario
   return {
     mostrarLogin,
     ocultarLogin

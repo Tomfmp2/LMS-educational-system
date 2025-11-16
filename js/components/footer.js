@@ -165,10 +165,7 @@ export class Footer extends HTMLElement {
         </div>
     </footer>
     `;
-    
-    console.log('Footer component renderizado');
   }
 }
 
 customElements.define('footer-global', Footer);
-console.log('Web Component "footer-global" registrado');

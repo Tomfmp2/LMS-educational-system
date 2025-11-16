@@ -10,10 +10,8 @@ export class header extends HTMLElement {
 
   cargarSesion() {
     const sesionActual = localStorage.getItem('sesionActual');
-    console.log('Sesión actual en localStorage:', sesionActual);
     if (sesionActual) {
       this.sesion = JSON.parse(sesionActual);
-      console.log('Sesión cargada:', this.sesion);
     }
   }
 
@@ -226,7 +224,7 @@ export class header extends HTMLElement {
     if (link) {
       link.addEventListener('click', async (e) => {
         e.preventDefault();
-        const { renderCursos } = await import('../modules/cursos.js');
+        const { renderCursos } = await import('../pages/cursos.js');
         const section = document.getElementById('section-home');
         if (section) {
           section.innerHTML = '';
@@ -305,20 +303,17 @@ export class header extends HTMLElement {
     if (btnCrearCurso) {
       btnCrearCurso.addEventListener('click', async () => {
         try {
-          const { renderCrearCurso } = await import('../modules/crearCursos.js');
+          const { renderCrearCurso } = await import('../admin/crearCursos.js');
           const section = document.getElementById('section-home');
           if (section) {
             section.innerHTML = '';
             section.appendChild(renderCrearCurso());
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           } else {
-            console.error('No se encontró el elemento section-home');
             notificacionError('Error al cargar el contenedor. Recarga la página.');
           }
         } catch (error) {
-          console.error('Error al cargar el módulo de crear cursos:', error);
-          console.error('Stack:', error.stack);
-          notificacionError(`Error: ${error.message}`);
+          notificacionError(`Error al cargar: ${error.message}`);
         } finally {
           menuUsuario.classList.remove('visible');
         }
@@ -329,7 +324,7 @@ export class header extends HTMLElement {
     if (btnGestionProfesores) {
       btnGestionProfesores.addEventListener('click', async () => {
         try {
-          const { renderGestionProfesores } = await import('../modules/gestionProfesores.js');
+          const { renderGestionProfesores } = await import('../admin/gestionProfesores.js');
           const section = document.getElementById('section-home');
           if (section) {
             section.innerHTML = '';
@@ -337,7 +332,6 @@ export class header extends HTMLElement {
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         } catch (error) {
-          console.error('Error al cargar la gestión de profesores:', error);
           notificacionError('Error al cargar gestión de profesores. Recarga la página.');
         } finally {
           menuUsuario.classList.remove('visible');
@@ -348,7 +342,7 @@ export class header extends HTMLElement {
     if (btnMisCursos) {
       btnMisCursos.addEventListener('click', async () => {
         try {
-          const { renderMisCursos } = await import('../modules/misCursos.js');
+          const { renderMisCursos } = await import('../pages/misCursos.js');
           const section = document.getElementById('section-home');
           if (section) {
             section.innerHTML = '';
@@ -356,7 +350,6 @@ export class header extends HTMLElement {
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         } catch (error) {
-          console.error('Error al cargar mis cursos:', error);
           notificacionError('Error al cargar tus cursos. Recarga la página.');
         } finally {
           menuUsuario.classList.remove('visible');
@@ -367,7 +360,7 @@ export class header extends HTMLElement {
     if (btnFavoritos) {
       btnFavoritos.addEventListener('click', async () => {
         try {
-          const { renderFavoritos } = await import('../modules/favoritos.js');
+          const { renderFavoritos } = await import('../pages/favoritos.js');
           const section = document.getElementById('section-home');
           if (section) {
             section.innerHTML = '';
@@ -375,7 +368,6 @@ export class header extends HTMLElement {
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         } catch (error) {
-          console.error('Error al cargar favoritos:', error);
           notificacionError('Error al cargar favoritos. Recarga la página.');
         } finally {
           menuUsuario.classList.remove('visible');
@@ -427,4 +419,3 @@ export class header extends HTMLElement {
 }
 
 customElements.define('header-global', header);
-console.log('Header global registrado correctamente');

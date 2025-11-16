@@ -1,6 +1,4 @@
 export function renderLoginView() {
-  console.log('Renderizando vista del login...');
-  
   const loginHTML = `
   <main id="fondo-login" style="display:none;">
     <section id="content-login">
@@ -17,5 +15,4 @@ export function renderLoginView() {
   `;
 
   document.body.insertAdjacentHTML('beforeend', loginHTML);
-  console.log('Vista de login renderizada');
 }

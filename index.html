@@ -103,5 +103,50 @@
     </section>
     <footer-global></footer-global>
     <script type="module" src="/js/app.js"></script>
-</body>
-</html>
+    <script>
+        // Limpieza de datos automáticos generados en versiones anteriores
+        // Ejecutar solo una vez para limpiar cursos, módulos y lecciones que se creaban automáticamente
+        const cleanupVersion = 'v1.1-cleanup';
+        const lastCleanup = localStorage.getItem('lastCleanup');
+        
+        if (lastCleanup !== cleanupVersion) {
+            // Obtener datos actuales
+            let cursos = JSON.parse(localStorage.getItem('cursos') || '[]');
+            let modulos = JSON.parse(localStorage.getItem('modulos') || '[]');
+            let lecciones = JSON.parse(localStorage.getItem('lecciones') || '[]');
+            let profesores = JSON.parse(localStorage.getItem('profesores') || '[]');
+            
+            // Convertir a arrays si son objetos
+            if (!Array.isArray(cursos)) cursos = Object.values(cursos || {});
+            if (!Array.isArray(modulos)) modulos = Object.values(modulos || {});
+            if (!Array.isArray(lecciones)) lecciones = Object.values(lecciones || {});
+            if (!Array.isArray(profesores)) profesores = Object.values(profesores || {});
+            const profesoresDefaultEmails = [
+                'juan.martinez@lms.edu',
+                'sofia.garcia@lms.edu',
+                'roberto.lopez@lms.edu',
+                'maria.rodriguez@lms.edu',
+                'carlos.fernandez@lms.edu'
+            ];
+            
+            cursos = cursos.filter(c => !profesoresDefaultEmails.includes(c.docente));
+            
+            // Limpiar módulos sin cursos válidos
+            modulos = modulos.filter(m => 
+                cursos.some(c => c && c.codigo === m.cursoCodigo)
+            );
+            
+            // Limpiar lecciones sin módulos válidos
+            lecciones = lecciones.filter(l => 
+                modulos.some(m => m && m.codigo === l.moduloCodigo)
+            );
+            
+            // Guardar datos limpios
+            localStorage.setItem('cursos', JSON.stringify(cursos));
+            localStorage.setItem('modulos', JSON.stringify(modulos));
+            localStorage.setItem('lecciones', JSON.stringify(lecciones));
+            localStorage.setItem('lastCleanup', cleanupVersion);
+            
+            console.log('Datos limpiados. Cursos, módulos y lecciones automáticos removidos.');
+        }
+    </script>

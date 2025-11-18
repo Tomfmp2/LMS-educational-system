@@ -12,7 +12,7 @@ Un sistema de gestión de aprendizaje (Learning Management System) especializado
 
 La plataforma está disponible en línea en:
 
-**[https://cursosabc.netlify.app/](https://cursosabc.netlify.app/)**
+**[Link Pagina en la Web](https://lms-educational-system-l37ip4p7o.vercel.app)**
 
 ---
 
@@ -43,14 +43,12 @@ La plataforma está disponible en línea en:
 5. **Curso de DevOps y Cloud** - Docker, Kubernetes y AWS
 
 Cada curso incluye múltiples módulos con lecciones detalladas y contenido específico.
-
----
-
+https://github.com/Tomfmp2/LMS-educational-system
 ## 🛠️ Tecnologías Utilizadas
 
 - **Frontend:** HTML5, CSS3, JavaScript (Vanilla)
 - **Almacenamiento:** LocalStorage (navegador)
-- **Web Components:** Componentes personalizados reutilizables
+- **Web Components:** Componentes personalizhttps://github.com/Tomfmp2/LMS-educational-systemados reutilizables
 - **Arquitectura:** Modular y escalable
 
 ---
@@ -85,7 +83,7 @@ Antes de instalar, asegúrate de tener:
    # Opción 1: Usar Live Server (si tienes la extensión en VS Code)
    # Click derecho en index.html > Open with Live Server
    
-   # Opción 2: Usar Python (si está instalado)
+   # Opción 2: Usar Python (si está instalahttps://github.com/Tomfmp2/LMS-educational-systemdo)
    python -m http.server 8000
    
    # Opción 3: Usar Node.js http-server

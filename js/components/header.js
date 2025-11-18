@@ -188,6 +188,7 @@ export class header extends HTMLElement {
                 <div class="menu-item" id="btn-crear-curso">Crear Cursos</div>
                 <div class="menu-item" id="btn-gestion-profesores">Gestionar Profesores</div>
                 <div class="menu-item" id="btn-gestion-administrativos">Gestionar Administrativos</div>
+                <div class="menu-item" id="btn-nuevo-apartado">Gestor Estudiantes</div>
               ` : `
                 <div class="menu-item" id="btn-mis-cursos">Mis Cursos</div>
                 <div class="menu-item" id="btn-favoritos">Favoritos</div>
@@ -206,7 +207,7 @@ export class header extends HTMLElement {
     </header>
     `;
   }
-
+  administrativos
   setupLinkHome() {
     const link = this.shadowRoot.querySelector('#link-home');
     const logo = this.shadowRoot.querySelector('#logo');
@@ -214,7 +215,7 @@ export class header extends HTMLElement {
     const recargarHome = (e) => {
       e.preventDefault();
       location.reload();
-    };
+    };administrativos
     
     if (link) link.addEventListener('click', recargarHome);
     if (logo) logo.addEventListener('click', recargarHome);
@@ -339,6 +340,26 @@ export class header extends HTMLElement {
         }
       });
     }
+
+    const btnnuevoApartad = this.shadowRoot.querySelector('#btn-nuevo-apartado');
+    if (btnnuevoApartad) {
+      btnnuevoApartad.addEventListener('click', async () => {
+        try {
+          const { renderGestionProfesores } = await import('../admin/gestorEstudiantes.js');
+          const section = document.getElementById('section-home');
+          if (section) {
+            section.innerHTML = '';
+            section.appendChild(renderGestionProfesores());
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch (error) {
+          notificacionError('Error al cargar el nuevo apartado. Recarga la página.');
+        } finally {
+          menuUsuario.classList.remove('visible');
+        }
+      });
+    }
+
 
     const btnGestionAdministrativos = this.shadowRoot.querySelector('#btn-gestion-administrativos');
     if (btnGestionAdministrativos) {

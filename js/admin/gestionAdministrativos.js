@@ -584,7 +584,7 @@ export function renderGestionAdministrativos() {
     const modal = document.createElement('div');
     modal.className = 'modal-contenedor-crear';
     modal.innerHTML = `
-      <div class="modal-header">✏️ Editar Administrativo</div>
+      <div class="modal-header">Editar Administrativo</div>
       <div class="modal-subtitle">ID: ${admin.identificacion}</div>
       <form class="modal-body">
         <div class="form-group">
